@@ -1,5 +1,12 @@
 # Thay đổi
 
+## 0.3.0 — Phase 3 (breaking changes)
+
+- Đèn có dầu, refuel/out/relight, ever_lit/relit_count và capacity10..20.
+- Safe zone chỉ khi fuel>=30, shade drain, pulse thưởng15 khi đánh drain.
+- Bỏ all_lit và thắng sớm; xét ceil60% đèn sáng tại bình minh. Thời lượng240/270/300.
+- Thay toàn bộ điểm và snapshot/scenario v1.2; ADR và test biên tick cuối.
+
 ## 0.2.0 — Phase 2
 
 - Chuẩn hóa tuning, 3 bản đồ, terrain/bridge/ramp/pad, dash, fall/respawn.

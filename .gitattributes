@@ -3,3 +3,5 @@
 *.png binary
 *.mp4 binary
 *.zip binary
+docs/requirements/*.txt -whitespace
+docs/proof/**/*.txt -whitespace

@@ -97,10 +97,15 @@ export class Game{
     this.emit('deposit',{lantern_id:l.id,amount,deposited:l.deposited});
     if(l.deposited>=cost){const relight=l.ever_lit;l.lit=true;l.fuelUnits=6000;l.ever_lit=true;if(relight)l.relit_count++;this.successfulLights++;this.score+=this.fuelRules?(relight?40:100):100;this.emit('lantern_lit',{lantern_id:l.id,...(this.fuelRules?{relight}:{})});}
   }
-  receives(l){return!l.lit;}
-  lightCost(l){return 10;}
-  refuel(l){}
-  decayFuel(){}
+  receives(l){return!l.lit||(this.fuelRules&&l.fuelUnits<6000);}
+  lightCost(l){return this.fuelRules&&l.ever_lit?5:10;}
+  refuel(l){if(!this.fuelRules)return;const amount=Math.min(this.player.carried,Math.ceil((6000-l.fuelUnits)/600));if(amount<=0)return;this.player.carried-=amount;l.fuelUnits=Math.min(6000,l.fuelUnits+600*amount);this.score+=5*amount;this.emit('refuel',{lantern_id:l.id,amount,fuel:round(l.fuelUnits/60,1)});}
+  decayFuel(){if(!this.fuelRules||this.bench)return;
+    for(const l of this.lanterns)if(l.lit){const draining=this.shades.filter(sh=>sh.state==='drain'&&sh.target_lantern_id===l.id&&distXZ(sh.pos,l.pos)<=2+EPS&&l.fuelUnits<1800);l.fuelUnits=Math.max(0,l.fuelUnits-1-5*draining.length);
+      for(const sh of draining){sh.drainTicks++;if(sh.drainTicks%60===0)this.emit('fuel_drain',{lantern_id:l.id,shade_id:sh.id,fuel:round(l.fuelUnits/60,1)});}
+      if(l.fuelUnits===0){l.lit=false;l.deposited=0;this.emit('lantern_out',{lantern_id:l.id});}
+    }
+  }
   pulse(){
     const p=this.player;if(this.pulseCD>0||p.carried<3)return;p.carried-=3;this.pulseCD=180;
     const center=[p.pos[0],p.pos[1]+.8,p.pos[2]],hit=e=>Math.hypot(...e.pos.map((v,i)=>v-center[i]))<=5+EPS,ids=[];
@@ -142,8 +147,8 @@ export class Game{
   }
   finish(){let reason;const p=this.player;
     if(p.flames===0){this.state='lost';reason='no_flames';}
-    else if(this.lanterns.every(l=>l.lit)){this.state='won';reason='all_lit';this.score+=Math.floor(this.timeLeft)*2+p.flames*50;}
-    else if(this.timeLeft<=0){this.state='lost';reason='dawn';}
+    else if(!this.fuelRules&&this.lanterns.every(l=>l.lit)){this.state='won';reason='all_lit';this.score+=Math.floor(this.timeLeft)*2+p.flames*50;}
+    else if(this.timeLeft<=0){const lit=this.lanterns.filter(l=>l.lit);if(this.fuelRules&&lit.length>=Math.ceil(this.lanterns.length*.6)){this.state='won';reason='dawn_survived';this.score+=lit.reduce((sum,l)=>sum+50+Math.floor(l.fuelUnits/60),0)+p.flames*50;}else{this.state='lost';reason='dawn';}}
     if(reason)this.emit('game_over',{result:this.state,reason});
   }
   snapshot(){const p=this.player;return {type:'snapshot',tick:this.tick,sim_tick:this.simTick,night:this.night,state:this.state,time_left_s:round(this.timeLeft),score:this.score,

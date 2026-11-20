@@ -1,6 +1,6 @@
 # Đảo Đèn Lồng
 
-**Phase 2 — Test Contract v1.1.** Game 3D góc nhìn thứ ba: cùng Mây gom
+**Phase 3 — Test Contract v1.2.** Game 3D góc nhìn thứ ba: cùng Mây gom
 đom đóm, thắp đèn trên ba hòn đảo và tránh Bóng Mực trước bình minh.
 
 **Demo:** chạy bản chơi theo hướng dẫn dưới. Chưa có video MP4; video và Release
@@ -40,11 +40,18 @@ nạp nhiều lần. Đèn sáng có vùng an toàn 6 m. Pulse 3D 5 m, stun 120 
 Thắp hết đèn thì thắng; hết 3 ngọn lửa hoặc hết giờ thì thua. Rơi khỏi đảo mất một lửa
 và toàn bộ đom đóm, hồi sinh sau 60 tick. Đêm 1/2/3 có 5/6/7 đèn và 300/330/360 giây.
 
+## Giữ đảo sáng tới bình minh
+
+Đèn có 100 dầu, hao1/s, có thể châm 10 dầu/đom đóm. Dầu<30 mất vùng an toàn;
+Bóng Mực wander có thể hút thêm5/s. Đèn hết dầu tắt, thắp lại cần5 đom đóm.
+Thắp thành công tăng sức chứa thêm2, tối đa20. Không thắng sớm: hết giờ cần còn sống
+và có ít nhất3/5,4/6,5/7 đèn sáng. Thời lượng mới240/270/300 giây.
+
 ## Điểm số
 
-- Mỗi đom đóm nạp: +10; mỗi đèn được thắp: +100. Nhặt không cộng điểm.
-- Mỗi Bóng Mực trúng pulse: +5.
-- Khi thắng: +2 × floor(giây còn lại), +50 × ngọn lửa còn lại, chỉ cộng một lần.
+- Mỗi đom đóm nạp/châm: +5; thắp lần đầu +100, thắp lại +40. Nhặt không cộng điểm.
+- Mỗi Bóng Mực trúng pulse: +5 tổng; +15 tổng nếu nó đang hút dầu.
+- Khi thắng: mỗi đèn sáng +50+floor(dầu), mỗi lửa còn lại +50; không thưởng thời gian.
 - Dựng scenario không cộng điểm và không phát event.
 
 Tất cả tuning dùng thật nằm trong [game.contract.json](game.contract.json).
@@ -60,7 +67,7 @@ npm run smoke:clean
 
 `verify` chạy test, build, các scenario tính năng, so replay từng byte và chạy đủ thời lượng
 ba đêm. Sai bất cứ bước nào trả mã khác 0. Bằng chứng phase hiện tại ở
-[docs/proof/phase-2](docs/proof/phase-2/), gồm report/hash, TAP, scenario, input và JSONL.
+[docs/proof/phase-3](docs/proof/phase-3/), gồm report/hash, TAP, scenario, input và JSONL.
 Lượt thắng thế giới mặc định của Phase 1 giữ nguyên ở docs/proof/phase-1 và tag phase-1.
 `smoke:clean` cài lại từ cache npm trong thư mục tạm trống, build và chạy headless;
 cần đã chạy `npm ci` ít nhất một lần để có cache, không cần tải mạng thêm.
@@ -68,7 +75,7 @@ cần đã chạy `npm ci` ít nhất một lần để có cache, không cần 
 Đã cấu hình GitHub Actions trên Ubuntu và macOS; trạng thái CI chỉ được xác nhận
 khi workflow thực sự chạy. Số đo local hiện lấy trên Windows, không thay thế test ẩn.
 
-## Headless — Test Contract v1.1
+## Headless — Test Contract v1.2
 
 CLI chỉ cần Node.js; không khởi tạo Three.js, cửa sổ hoặc GPU.
 
@@ -105,5 +112,5 @@ không dùng RNG simulation, nên không thay đổi đầu ra headless.
 - [README đề lab gốc](docs/lab/README.md), [GUIDE](GUIDE.md), [RULES](RULES.md),
   [CHECKPOINTS](CHECKPOINTS.md), [RUBRIC](RUBRIC.md), [SUBMISSION](SUBMISSION.md).
 
-Phase 3/4 và Release/video còn đang triển khai. Không sửa tag cũ hoặc ghi đạt
-cho số đo chưa thực hiện. Ghi chú hiện hành: docs/notes/phase-2.md.
+Phase 4 và Release/video còn đang triển khai. Không sửa tag cũ hoặc ghi đạt
+cho số đo chưa thực hiện. Ghi chú hiện hành: docs/notes/phase-3-adr.md.
