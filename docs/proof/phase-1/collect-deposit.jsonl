@@ -1,0 +1,12 @@
+{"type":"snapshot","tick":0,"sim_tick":0,"state":"playing","time_left_s":300,"score":0,"player":{"pos":[0,0,0],"flames":3,"carried":0},"lanterns":[{"id":"L1","pos":[0,0,2.5],"deposited":0,"lit":false},{"id":"L2","pos":[17.119,0,5.562],"deposited":0,"lit":false},{"id":"L3","pos":[10.58,0,-14.562],"deposited":0,"lit":false},{"id":"L4","pos":[-10.58,0,-14.562],"deposited":0,"lit":false},{"id":"L5","pos":[-17.119,0,5.562],"deposited":0,"lit":false}],"shades":[],"motes_active":6,"motes":[{"id":"M1","pos":[0,0,0]},{"id":"M2","pos":[0.2,0,0]},{"id":"M3","pos":[0.4,0,0]},{"id":"M4","pos":[0.6,0,0]},{"id":"M5","pos":[0.8,0,0]},{"id":"M6","pos":[1,0,0]}]}
+{"type":"event","tick":1,"name":"mote_picked","data":{"carried":1}}
+{"type":"event","tick":1,"name":"mote_picked","data":{"carried":2}}
+{"type":"event","tick":1,"name":"mote_picked","data":{"carried":3}}
+{"type":"event","tick":1,"name":"mote_picked","data":{"carried":4}}
+{"type":"event","tick":1,"name":"mote_picked","data":{"carried":5}}
+{"type":"event","tick":1,"name":"mote_picked","data":{"carried":6}}
+{"type":"event","tick":1,"name":"deposit","data":{"lantern_id":"L1","amount":6,"deposited":6}}
+{"type":"event","tick":1,"name":"lantern_lit","data":{"lantern_id":"L1"}}
+{"type":"snapshot","tick":10,"sim_tick":10,"state":"playing","time_left_s":299.833,"score":160,"player":{"pos":[0,0,0],"flames":3,"carried":0},"lanterns":[{"id":"L1","pos":[0,0,2.5],"deposited":6,"lit":true},{"id":"L2","pos":[17.119,0,5.562],"deposited":0,"lit":false},{"id":"L3","pos":[10.58,0,-14.562],"deposited":0,"lit":false},{"id":"L4","pos":[-10.58,0,-14.562],"deposited":0,"lit":false},{"id":"L5","pos":[-17.119,0,5.562],"deposited":0,"lit":false}],"shades":[],"motes_active":0,"motes":[]}
+{"type":"snapshot","tick":20,"sim_tick":20,"state":"playing","time_left_s":299.667,"score":160,"player":{"pos":[0,0,0],"flames":3,"carried":0},"lanterns":[{"id":"L1","pos":[0,0,2.5],"deposited":6,"lit":true},{"id":"L2","pos":[17.119,0,5.562],"deposited":0,"lit":false},{"id":"L3","pos":[10.58,0,-14.562],"deposited":0,"lit":false},{"id":"L4","pos":[-10.58,0,-14.562],"deposited":0,"lit":false},{"id":"L5","pos":[-17.119,0,5.562],"deposited":0,"lit":false}],"shades":[],"motes_active":0,"motes":[]}
+{"type":"end","ticks":20,"state":"playing","score":160}

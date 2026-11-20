@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-11-20T15:34:11.925Z",
+  "platform": "win32",
+  "clean_directory": "C:\\Users\\LENOVO\\AppData\\Local\\Temp\\dao-den-long-clean-X2WxYB",
+  "passed": true,
+  "commands": [
+    {
+      "command": [
+        "npm-cli",
+        "ci",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "status": 0,
+      "stdout": "\nadded 1 package in 39s\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "scripts/build.mjs"
+      ],
+      "status": 0,
+      "stdout": "Built static game in dist/ (no CDN or runtime network dependency).\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "src/cli.mjs",
+        "--seed",
+        "12",
+        "--night",
+        "1",
+        "--ticks",
+        "60",
+        "--out",
+        "smoke.jsonl"
+      ],
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

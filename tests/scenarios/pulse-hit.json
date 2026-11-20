@@ -1,0 +1,6 @@
+{
+  "random_motes": false,
+  "random_shades": false,
+  "player": { "carried": 10 },
+  "shades": [{ "id": "shade-close", "pos": [0, 0, 0] }, { "id": "shade-far", "pos": [12, 0, 0] }]
+}

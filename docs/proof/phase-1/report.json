@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-11-20T15:28:26.393Z",
+  "host": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v26.13.1",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz",
+    "logical_cpus": 8
+  },
+  "tests": {
+    "report": "tests.tap",
+    "exit_code": 0
+  },
+  "scenarios": [
+    "collect-deposit",
+    "pulse-hit",
+    "dawn",
+    "default-win"
+  ],
+  "default_win": {
+    "type": "end",
+    "ticks": 2461,
+    "state": "won",
+    "score": 1786,
+    "simulated_seconds": 41.016666666666666,
+    "lanterns_lit": 5,
+    "elapsed_ms": 1211.76
+  },
+  "deterministic": {
+    "identical": true,
+    "sha256": "38604f68cac8e6f1888f2d2d527039cc6118701276f8e12fecaa366c52dc2b86",
+    "files": [
+      "default-win-a.jsonl",
+      "default-win-b.jsonl"
+    ]
+  },
+  "source_sha256": {
+    "game.contract.json": "8ce1c5ceaac80ffd34f58afcc60f317753c3681f5b032f2106949bc95162d1aa",
+    "src/simulation.mjs": "fdc2cc0b566e0a4c24fdfdcffcd4ef5d3d60ef8beeef3afe8d66130a5e89c1ea",
+    "src/cli.mjs": "5da8752ea9a683350d9a7a6cb8fe6d7ba7d16870eb9a54b075bea1ed7b2816c0",
+    "web/app.mjs": "27d8a292579ff068ba750a8b9eb7043e22387870aa02b793e7e9a39c3c03a3c6",
+    "web/index.html": "4446e39e419737d5bc675cb9dfe06fe13f7f361ce5a09662dcb0c198105f9aa8",
+    "web/style.css": "e8f64c48510bc1e7a721cc6f48392ae26d4b88743b6404d56469251c582ba357"
+  },
+  "limits": [
+    "Measured on the current Windows host only; not a macOS/Linux runtime certification.",
+    "Browser evidence is recorded separately; no graphics FPS threshold was published in Phase 1.",
+    "No hidden instructor tests available."
+  ]
+}

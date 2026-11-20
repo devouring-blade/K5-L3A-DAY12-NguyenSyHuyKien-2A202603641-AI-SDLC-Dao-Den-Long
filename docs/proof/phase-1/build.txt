@@ -1,0 +1,1 @@
+Built static game in dist/ (no CDN or runtime network dependency).
