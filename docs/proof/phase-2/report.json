@@ -1,0 +1,56 @@
+{
+  "generated_at": "2026-11-20T16:19:31.553Z",
+  "contract_version": "1.1",
+  "phase": 2,
+  "host": {
+    "node": "v26.13.1",
+    "platform": "win32",
+    "cpu": "11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz"
+  },
+  "test_report": "tests.tap",
+  "test_exit": 0,
+  "deterministic": {
+    "identical": true,
+    "sha256": "12f93212206cdc297236cbfa36f87040bccbbf73338952277afe6b1c3ce851ea"
+  },
+  "headless_measurements": [
+    {
+      "night": 1,
+      "elapsed_ms": 176,
+      "type": "end",
+      "ticks": 18000,
+      "state": "lost",
+      "score": 0
+    },
+    {
+      "night": 2,
+      "elapsed_ms": 165,
+      "type": "end",
+      "ticks": 19800,
+      "state": "lost",
+      "score": 0
+    },
+    {
+      "night": 3,
+      "elapsed_ms": 194,
+      "type": "end",
+      "ticks": 21600,
+      "state": "lost",
+      "score": 0
+    }
+  ],
+  "source_sha256": {
+    "game.contract.json": "686274effff63418ed53df3ec53ebac8f8de07f0ec5fb9efc3e634e04a10042c",
+    "src/simulation.mjs": "95f6153ffdb346970bd5a8817de73ba4b1a1f6ebe46d516e4c48ad8242dcbc19",
+    "src/world.mjs": "e79a51543033be704c6679381b7a2a02e18de3314a3575b39a921b017e1ee1f8",
+    "src/validation.mjs": "60600533e9f528188c9ed7ff7d1cd860bfd6c73f4bc1025dd26346f1b2b38466",
+    "src/cli.mjs": "73c733a3213e050dadccfae3fed87c356330c76ba72d2a133bf48805a2a36783",
+    "web/app.mjs": "b148f2b2094dac7acd079ef5b9ed37cb28d2b69c6e6cfe95383a78583fd8ee67",
+    "web/index.html": "6924fb16ea5e13f1ee24499ae12f336f8fa81f1480c6825383b0a4c28739cc8e",
+    "web/style.css": "6cd436d36de649282f3b10e3f74c51271fcfafa1618ee20d76f9718439c34788"
+  },
+  "limits": [
+    "Only current host measured; hidden instructor tests unavailable.",
+    "Graphics benchmark and browser checks recorded separately."
+  ]
+}

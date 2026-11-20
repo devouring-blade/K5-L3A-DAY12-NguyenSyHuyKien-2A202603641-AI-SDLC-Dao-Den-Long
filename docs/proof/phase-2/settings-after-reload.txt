@@ -1,0 +1,40 @@
+Browser tab: 5, Title: "Đảo Đèn Lồng · Hành trình bình minh", URL: "http://127.0.0.1:4173/".
+1 AXWebArea Đảo Đèn Lồng · Hành trình bình minh, URL: 127.0.0.1:4173/
+	2 container Description: Đảo Đèn Lồng, game 3D, ID: game
+		3 container topbar
+			4 text 🏮 ĐẢO ĐÈN LỒNG
+			5 text ĐÊM 1 · ĐẢO BẾN
+			6 button Description: Hướng dẫn, ID: help
+			7 button Description: Cài đặt, ID: settings-open
+			8 button Description: Tạm dừng, ID: pause
+		9 container intro
+			10 text NƠI ÁNH SÁNG TÌM ĐƯỜNG VỀ
+			11 heading Giữ một đốm sáng. Thắp cả hòn đảo., Value: 1
+				12 text Giữ một đốm sáng.
+				13 text Thắp cả 
+				14 text hòn đảo.
+			15 text Đi cùng Mây qua ba hòn đảo. Gom đom đóm, xua sương đen và giữ những ngọn đèn ấm áp tới bình minh.
+			16 container
+				17 text Đêm khởi đầu
+				18 pop up button (collapsed, settable) Đêm khởi đầu, Value: 01 · Đảo Bến, ID: night-select, Secondary Actions: Expand
+					19 menu
+						20 (selected) 01 · Đảo Bến
+						21 02 · Đảo Cau
+						22 03 · Đảo Chuông
+			23 button Bắt đầu hành trình ✦, ID: start
+			24 container
+				25 text WASD  đi ·  Space  nhảy ·  Shift  lướt
+				26 text E  nạp đèn ·  F  tỏa sáng ·  Q/C  camera
+		27 container Một hành trình vừa với bạn, ID: settings
+			28 heading Một hành trình vừa với bạn, Value: 2, ID: settings-title
+				29 text Một hành trình vừa với bạn
+			30 container
+				31 text Âm lượng
+				32 slider (settable, integer) Âm lượng, Value: 30, ID: volume
+			33 container
+				34 text Độ nhạy chuột
+				35 slider (settable, float) Độ nhạy chuột, Value: 0.3499999940395355, Details: 0.35, ID: sensitivity
+			36 checkbox (settable, integer) Description: Bảng màu dễ phân biệt, Value: 0, ID: colorblind
+			37 button Lưu và trở lại, ID: settings-close
+
+The focused UI element is 7 button Description: Cài đặt, ID: settings-open

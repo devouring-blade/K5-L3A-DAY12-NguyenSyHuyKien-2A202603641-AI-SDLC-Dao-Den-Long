@@ -1,5 +1,24 @@
 # Kế hoạch thực hiện lab
 
+## Kế hoạch tiếp tục Phase 2–4 (sau khi đăng nhập Claude)
+
+Đã đọc đủ Ticket-02/v1.1, Ticket-03/v1.2, Ticket-04/v1.3 từ các tab #p2/#p3/#p4.
+Bản chụp DOM gốc lưu tại `docs/requirements/ticket-02.txt` … `ticket-04.txt`.
+Tab ẩn danh hiển thị khóa; sau đăng nhập cùng tài khoản, cả bốn tab mở được.
+Không tiếp tục giả định rằng giảng viên chưa phát hành đề.
+
+1. Phase 2: thay tuning tự chọn bằng số chuẩn; terrain 3 đêm, va chạm/độ cao/rơi,
+   dash/pad, AI trạng thái, drifter/charm/pause; menu chuỗi đêm, HUD và settings lưu.
+   Test trước các trường hợp biên: cạnh input, pause tick/sim_tick, spawn đúng lịch,
+   pulse 3D và đẩy 15 tick, hit/recoil/fall, map/pad, drifter và charm. Chốt tag phase-2.
+2. Phase 3: thêm fuel theo đơn vị nguyên 1/60, ever_lit/relit_count, refuel, drain,
+   sức chứa và điểm mới; thay thắng sớm bằng xét ngưỡng ở bình minh. ADR ghi test cũ
+   bị thay và lý do. Kiểm chứng ngưỡng fuel=30, dầu cạn ngay tick cuối, no_flames ưu tiên.
+3. Phase 4: renderer benchmark thật, soak cùng tiến trình/RSS, leaderboard local/export,
+   remap phím và accessibility, UI >=18px, đóng gói web + video thật. Không bịa số FPS,
+   không dùng thời gian simulation để thay số đo rendering. Ghi rõ giới hạn máy hiện tại.
+4. Mỗi phase lưu test/output/hash tương ứng; giữ nguyên phase-1, không viết lại tag cũ.
+
 > Cập nhật: đã mở và đọc được PRD-0/Test Contract trong tab trình duyệt ở lượt sau.
 > Phần dưới giữ lại ghi nhận lần chuẩn bị ban đầu. Kế hoạch và giả định hiện hành:
 > [Phase 1](phase-1.md). Bằng chứng thực thi: [report.json](../proof/phase-1/report.json).

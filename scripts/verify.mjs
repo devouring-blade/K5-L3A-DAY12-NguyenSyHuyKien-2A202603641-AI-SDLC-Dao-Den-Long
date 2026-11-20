@@ -1,90 +1,23 @@
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
-import crypto from 'node:crypto';
-import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
-import { performance } from 'node:perf_hooks';
-import { fileURLToPath } from 'node:url';
-import { Game, HZ } from '../src/simulation.mjs';
-
-const root = fileURLToPath(new URL('../', import.meta.url));
-const proof = path.join(root, 'docs/proof/phase-1');
-fs.mkdirSync(proof, { recursive: true });
-function command(args, logfile) {
-  const result = spawnSync(process.execPath, args, { cwd: root, encoding: 'utf8', maxBuffer: 20 * 1024 * 1024 });
-  if (logfile) fs.writeFileSync(path.join(proof, logfile), (result.stdout ?? '') + (result.stderr ?? ''));
-  if (result.status !== 0) { process.stderr.write(result.stdout ?? ''); process.stderr.write(result.stderr ?? ''); throw new Error(`Verification failed (${result.status}): ${args.join(' ')}`); }
-  return result;
-}
-function headless(name, args, ticks = 600) {
-  const out = path.join(proof, name + '.jsonl');
-  command(['src/cli.mjs', '--seed', '12', '--night', '1', '--ticks', String(ticks), '--out', out, ...args]);
-  const raw = fs.readFileSync(out, 'utf8');
-  return { raw, lines: raw.trim().split('\n').map(JSON.parse) };
-}
-try {
-  // No synthetic PASS output: retain the real node:test report and stop on nonzero exit.
-  const tests = fs.readdirSync(path.join(root, 'tests')).filter(f => f.endsWith('.test.mjs')).map(f => 'tests/' + f);
-  command(['--test', '--test-reporter=tap', ...tests], 'tests.tap');
-  command(['scripts/build.mjs'], 'build.txt');
-  const collect = headless('collect-deposit', ['--scenario', 'tests/scenarios/collect-deposit.json', '--inputs', 'tests/scenarios/collect-deposit-inputs.json'], 20);
-  assert.equal(collect.lines.filter(e => e.name === 'mote_picked').length, 6);
-  assert.equal(collect.lines.filter(e => e.name === 'lantern_lit').length, 1);
-  const combat = headless('pulse-hit', ['--scenario', 'tests/scenarios/pulse-hit.json', '--inputs', 'tests/scenarios/pulse-inputs.json'], 400);
-  assert.deepEqual(combat.lines.find(e => e.name === 'pulse').data.stunned_ids, ['shade-close']);
-  assert.ok(combat.lines.some(e => e.name === 'player_hit'));
-  const dawn = headless('dawn', ['--scenario', 'tests/scenarios/dawn.json'], 100);
-  assert.equal(dawn.lines.at(-1).state, 'lost');
-  assert.equal(dawn.lines.at(-1).ticks, 3);
-
-  // Derive ordinary controller inputs for the default world, then replay through CLI.
-  // No scenario override, teleportation, injected resource, or change to game tuning.
-  const { tuning } = JSON.parse(fs.readFileSync(path.join(root, 'game.contract.json'), 'utf8'));
-  const game = new Game(tuning, 12);
-  const frames = [];
-  let previous = {};
-  for (let tick = 0; tick < 18000 && game.state === 'playing'; tick++) {
-    const p = game.player;
-    const dist = entity => Math.hypot(entity.pos[0] - p.pos[0], entity.pos[2] - p.pos[2]);
-    const lanterns = game.lanterns.filter(l => !l.lit).sort((a, b) => dist(a) - dist(b));
-    const wantLantern = p.carried >= tuning.lantern_cost || (lanterns[0] && p.carried >= tuning.lantern_cost - lanterns[0].deposited);
-    const motes = game.motes.filter(m => m.availableTick <= game.tick).sort((a, b) => dist(a) - dist(b));
-    const target = wantLantern ? lanterns[0] : motes[0];
-    let x = target ? target.pos[0] - p.pos[0] : 0;
-    let z = target ? target.pos[2] - p.pos[2] : 0;
-    const d = Math.hypot(x, z);
-    if (d > 0) { x /= d; z /= d; }
-    const danger = game.shades.some(s => s.state !== 'stunned' && dist(s) < 3.5);
-    const input = { move: [x, z], interact: Boolean(wantLantern && target && d <= tuning.interact_radius && tick % 2 === 0), pulse: Boolean(danger && p.carried >= tuning.pulse_cost && tick % 2 === 0) };
-    const frame = { tick };
-    for (const [key, value] of Object.entries(input)) if (JSON.stringify(value) !== JSON.stringify(previous[key])) frame[key] = value;
-    if (Object.keys(frame).length > 1) frames.push(frame);
-    game.step(input); previous = input;
-  }
-  assert.equal(game.state, 'won', 'Default world controller must win with ordinary inputs');
-  const inputPath = path.join(proof, 'default-win-inputs.json');
-  fs.writeFileSync(inputPath, JSON.stringify({ frames }, null, 2) + '\n');
-  const start = performance.now();
-  const a = headless('default-win-a', ['--inputs', inputPath], 18000);
-  const elapsedMs = performance.now() - start;
-  const b = headless('default-win-b', ['--inputs', inputPath], 18000);
-  assert.equal(a.raw, b.raw, 'Determinism check: outputs differ');
-  assert.equal(a.lines.at(-1).state, 'won');
-  assert.equal(a.lines.filter(e => e.name === 'lantern_lit').length, 5);
-  const hash = crypto.createHash('sha256').update(a.raw).digest('hex');
-  const sourceFiles = ['game.contract.json', 'src/simulation.mjs', 'src/cli.mjs', 'web/app.mjs', 'web/index.html', 'web/style.css'];
-  const report = {
-    generated_at: new Date().toISOString(),
-    host: { platform: os.platform(), arch: os.arch(), node: process.version, cpu: os.cpus()[0]?.model, logical_cpus: os.cpus().length },
-    tests: { report: 'tests.tap', exit_code: 0 },
-    scenarios: ['collect-deposit', 'pulse-hit', 'dawn', 'default-win'],
-    default_win: { ...a.lines.at(-1), simulated_seconds: game.tick / HZ, lanterns_lit: 5, elapsed_ms: Math.round(elapsedMs * 100) / 100 },
-    deterministic: { identical: true, sha256: hash, files: ['default-win-a.jsonl', 'default-win-b.jsonl'] },
-    source_sha256: Object.fromEntries(sourceFiles.map(f => [f, crypto.createHash('sha256').update(fs.readFileSync(path.join(root, f))).digest('hex')])),
-    limits: ['Measured on the current Windows host only; not a macOS/Linux runtime certification.', 'Browser evidence is recorded separately; no graphics FPS threshold was published in Phase 1.', 'No hidden instructor tests available.']
-  };
-  fs.writeFileSync(path.join(proof, 'report.json'), JSON.stringify(report, null, 2) + '\n');
-  console.log(`Verified tests, build, scenarios, full default-world win (${game.tick} ticks) and byte-identical replay.`);
-  console.log('Evidence: docs/proof/phase-1/report.json');
-} catch (error) { console.error(error.message); process.exitCode = 1; }
+import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import crypto from 'node:crypto';import assert from 'node:assert/strict';import{spawnSync}from'node:child_process';import{performance}from'node:perf_hooks';import{fileURLToPath}from'node:url';
+const root=fileURLToPath(new URL('../',import.meta.url)),contract=JSON.parse(fs.readFileSync(path.join(root,'game.contract.json'))),phase=Number(contract.contract_version.split('.')[1])+1;
+const proof=path.join(root,'docs/proof/phase-'+phase);fs.mkdirSync(proof,{recursive:true});
+const run=(args,log)=>{const r=spawnSync(process.execPath,args,{cwd:root,encoding:'utf8',maxBuffer:20*1024*1024});if(log)fs.writeFileSync(path.join(proof,log),(r.stdout??'')+(r.stderr??''));if(r.status!==0)throw Error(r.stdout+'\n'+r.stderr);return r;};
+function scenario(name,night,s,frames,ticks){const sp=path.join(proof,name+'-scenario.json'),ip=path.join(proof,name+'-inputs.json'),op=path.join(proof,name+'.jsonl');fs.writeFileSync(sp,JSON.stringify(s,null,2)+'\n');fs.writeFileSync(ip,JSON.stringify({frames},null,2)+'\n');run(['src/cli.mjs','--seed','42','--night',String(night),'--scenario',sp,'--inputs',ip,'--ticks',String(ticks),'--out',op]);const raw=fs.readFileSync(op,'utf8');return{raw,lines:raw.trim().split('\n').map(JSON.parse)};}
+try{
+  const files=fs.readdirSync(path.join(root,'tests')).filter(f=>f.endsWith('.test.mjs')).map(f=>'tests/'+f);run(['--test','--test-reporter=tap',...files],'tests.tap');run(['scripts/build.mjs'],'build.txt');
+  const q={random_motes:false,random_shades:false,random_drifters:false,wind_enabled:false};
+  const dash=scenario('dash',1,q,[{tick:0,move:[0,1],dash:true}],12);assert.equal(dash.lines.filter(l=>l.name==='dash').length,1);
+  const charm=scenario('charm',2,{...q,charms:[{id:'C1',pos:[0,0,0]}]},[],30);assert.ok(charm.lines.some(l=>l.name==='charm_picked'));
+  const drifter=scenario('drifter',2,{...q,player:{carried:8},drifters:[{id:'D1',pos:[0,.8,0]}]},[{tick:1,pulse:true}],60);assert.ok(drifter.lines.some(l=>l.name==='drifter_steal'));assert.ok(drifter.lines.some(l=>l.name==='drifter_drop'));
+  const paused=scenario('pause',1,q,[{tick:0,pause:true},{tick:1,pause:false},{tick:60,pause:true}],61);assert.equal(paused.lines.find(l=>l.type==='snapshot'&&l.tick===60).sim_tick,0);
+  const pad=scenario('jump-pad',2,{...q,player:{pos:[20,0,18]}},[],110);assert.ok(pad.lines.some(l=>l.name==='jump_pad'));
+  const fall=scenario('fall',1,{...q,player:{pos:[41,-10.1,0],carried:8,invuln_ticks:100}},[],62);assert.equal(fall.lines.filter(l=>l.name==='player_hit').length,1);
+  scenario('wind',3,{...q,wind_enabled:true},[],1810);
+  const lamps=Array.from({length:5},(_,i)=>({id:'L'+(i+1),pos:[i*3,0,0],lit:i>0}));
+  const winScenario={...q,player:{carried:10},lanterns:lamps,time_left_s:phase===2?300:1};
+  const a=scenario('win-a',1,winScenario,[{tick:0,interact:true}],100),b=scenario('win-b',1,winScenario,[{tick:0,interact:true}],100);assert.equal(a.raw,b.raw);assert.equal(a.lines.at(-1).state,'won');
+  const measurements=[];for(let night=1;night<=3;night++){const start=performance.now();const r=scenario('full-night-'+night,night,q,[],21600);const ms=performance.now()-start;assert.ok(ms<=30000,'headless exceeds 30 seconds');measurements.push({night,elapsed_ms:Math.round(ms),...r.lines.at(-1)});}
+  const hash=f=>crypto.createHash('sha256').update(fs.readFileSync(path.join(root,f))).digest('hex');
+  const sources=['game.contract.json','src/simulation.mjs','src/world.mjs','src/validation.mjs','src/cli.mjs','web/app.mjs','web/index.html','web/style.css'];
+  const report={generated_at:new Date().toISOString(),contract_version:contract.contract_version,phase,host:{node:process.version,platform:os.platform(),cpu:os.cpus()[0]?.model},test_report:'tests.tap',test_exit:0,deterministic:{identical:true,sha256:crypto.createHash('sha256').update(a.raw).digest('hex')},headless_measurements:measurements,source_sha256:Object.fromEntries(sources.map(f=>[f,hash(f)])),limits:['Only current host measured; hidden instructor tests unavailable.','Graphics benchmark and browser checks recorded separately.']};fs.writeFileSync(path.join(proof,'report.json'),JSON.stringify(report,null,2)+'\n');console.log('Verified Phase '+phase+': tests, build, feature scenarios, deterministic replay and all3 full-night headless runs.');
+}catch(e){console.error(e.message);process.exitCode=1;}

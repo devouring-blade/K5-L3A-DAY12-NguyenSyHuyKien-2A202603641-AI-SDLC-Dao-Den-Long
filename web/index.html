@@ -1,47 +1,11 @@
-<!doctype html>
-<html lang="vi">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#0b1c25">
-  <meta name="description" content="Theo chân Mây, gom đom đóm và thắp lại năm ngọn đèn trên hòn đảo giữa biển mây.">
-  <title>Đảo Đèn Lồng · Đêm 1</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23ffba66' d='M12 3h8v4c12 3 12 18 0 21h-8C0 25 0 10 12 7Z'/%3E%3C/svg%3E">
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body>
-  <main id="game" tabindex="0" aria-label="Đảo Đèn Lồng, game 3D">
-    <div id="scene"></div>
-    <div class="vignette"></div>
-    <header class="topbar">
-      <div class="brand"><span class="lantern-icon" aria-hidden="true"></span><div>ĐẢO ĐÈN LỒNG<small>MỘT HÀNH TRÌNH CỦA ÁNH SÁNG</small></div></div>
-      <div class="night-label"><span></span> ĐÊM 01 <i>/</i> ĐẢO BẾN</div>
-      <div class="top-actions"><button id="sound" aria-label="Bật âm thanh" title="Bật/tắt âm thanh">Âm thanh: tắt</button><button id="help" aria-label="Xem hướng dẫn">?</button><button id="pause" aria-label="Tạm dừng">Ⅱ</button></div>
-    </header>
-    <section id="intro" class="intro overlay">
-      <div class="eyebrow"><span></span> NƠI ÁNH SÁNG TÌM ĐƯỜNG VỀ</div>
-      <h1>Giữ một đốm sáng.<br>Thắp cả <em>hòn đảo.</em></h1>
-      <p>Sương đen đã ghé Đảo Bến. Cùng Mây gom những chú đom đóm, đánh thức năm ngọn đèn và mang bình yên trở lại.</p>
-      <button id="start" class="primary">Bắt đầu đêm 1 <span aria-hidden="true">✦</span></button>
-      <div class="intro-note">5 ngọn đèn <b>·</b> 1 hòn đảo <b>·</b> Một chút can đảm</div>
-      <div class="intro-controls"><span><kbd>W A S D</kbd> Di chuyển</span><span><kbd>E</kbd> Thắp đèn</span><span><kbd>F</kbd> Tỏa sáng</span></div>
-    </section>
-    <div id="objective" class="objective hidden"><span class="eyebrow">MANG ÁNH SÁNG TRỞ LẠI</span><strong>Thắp sáng 5 ngọn đèn</strong><div id="lantern-progress" class="lantern-progress"></div></div>
-    <div id="toast" role="status" class="toast"></div>
-    <div id="interaction" class="interaction hidden"><kbd>E</kbd> <span>Nạp ánh sáng</span></div>
-    <footer id="hud" class="hud">
-      <div class="vitals"><div class="stat"><span class="stat-label">NGỌN LỬA CỦA MÂY</span><strong id="flames" class="flames">◆ ◆ ◆</strong></div><div class="divider"></div><div class="stat"><span class="stat-label">ĐOM ĐÓM</span><strong><span id="carried">0</span><small> / 18</small></strong></div><div class="divider"></div><div class="stat"><span class="stat-label">TRƯỚC BÌNH MINH</span><strong id="timer">05:00</strong></div></div>
-      <div class="bottom-hint">Đêm còn dài. Đừng để ánh sáng tắt.</div>
-      <div class="scorebox"><span class="stat-label">ĐIỂM HÀNH TRÌNH</span><strong id="score">0000</strong></div>
-    </footer>
-    <aside id="mapbox" class="mapbox hidden"><canvas id="minimap" width="180" height="180" aria-label="Bản đồ đảo, vị trí đèn và Mây"></canvas><span>ĐẢO BẾN <b>·</b> <span id="litcount">0 / 5 ĐÈN</span></span></aside>
-    <div id="play-controls" class="play-controls hidden"><kbd>WASD</kbd> di chuyển <kbd>Space</kbd> nhảy <kbd>E</kbd> nạp đèn <kbd>F</kbd> tỏa sáng <kbd>Q / C</kbd> xoay camera</div>
-    <section id="dialog" class="dialog hidden" role="dialog" aria-modal="true" aria-labelledby="dialog-title">
-      <div class="dialog-card"><span class="eyebrow" id="dialog-label">MỘT KHOẢNG LẶNG</span><h2 id="dialog-title">Đêm vẫn đang chờ.</h2><p id="dialog-text"></p><div id="help-text" class="hidden"><p><kbd>WASD / ↑↓←→</kbd> Di chuyển · <kbd>Space</kbd> Nhảy</p><p><kbd>E</kbd> Nạp đom đóm vào đèn gần nhất (6 con/đèn).</p><p><kbd>F</kbd> Tỏa sáng: tốn 2 đom đóm, xua Bóng Mực trong 7 m.</p><p><kbd>Q / C</kbd> hoặc kéo chuột: xoay camera · <kbd>P</kbd> Tạm dừng.</p><p>Đèn đã thắp là nơi trú ẩn. Thắp đủ 5 đèn trước bình minh để thắng.</p></div><button id="resume" class="primary">Tiếp tục hành trình</button><button id="restart" class="secondary">Bắt đầu lại</button></div>
-    </section>
-    <div id="loading" class="loading">Đang đánh thức hòn đảo…</div>
-    <div id="error" class="error hidden" role="alert"></div>
-  </main>
-  <script type="module" src="./app.mjs"></script>
-</body>
-</html>
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0E1430"><title>Đảo Đèn Lồng · Hành trình bình minh</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23ffb347' d='M12 3h8v4c12 3 12 18 0 21h-8C0 25 0 10 12 7Z'/%3E%3C/svg%3E"><link rel="stylesheet" href="style.css"></head>
+<body><main id="game" tabindex="0" aria-label="Đảo Đèn Lồng, game 3D">
+<div id="scene"></div><div class="vignette"></div>
+<header id="topbar"><div class="brand">🏮 ĐẢO ĐÈN LỒNG<small id="nightname">MỘT HÀNH TRÌNH CỦA ÁNH SÁNG</small></div><div id="clock" class="hidden"><strong id="timer">05:00</strong><span>TRƯỚC BÌNH MINH</span></div><div class="top-actions"><button id="help" aria-label="Hướng dẫn">?</button><button id="settings-open" aria-label="Cài đặt">⚙</button><button id="pause" aria-label="Tạm dừng">Ⅱ</button></div></header>
+<section id="intro" class="intro"><div class="eyebrow">NƠI ÁNH SÁNG TÌM ĐƯỜNG VỀ</div><h1>Giữ một đốm sáng.<br>Thắp cả <em>hòn đảo.</em></h1><p>Đi cùng Mây qua ba hòn đảo. Gom đom đóm, xua sương đen và giữ những ngọn đèn ấm áp tới bình minh.</p><label class="night-select">Đêm khởi đầu <select id="night-select"><option value="1">01 · Đảo Bến</option><option value="2">02 · Đảo Cau</option><option value="3">03 · Đảo Chuông</option></select></label><button id="start" class="primary">Bắt đầu hành trình ✦</button><button id="leaderboard-open" class="secondary hidden">Bảng xếp hạng</button><p class="control-summary"><kbd>WASD</kbd> đi · <kbd>Space</kbd> nhảy · <kbd>Shift</kbd> lướt<br><kbd>E</kbd> nạp đèn · <kbd>F</kbd> tỏa sáng · <kbd>Q/C</kbd> camera</p></section>
+<section id="hud" class="hidden"><div class="health"><span>NGỌN LỬA CỦA MÂY</span><strong id="flames">◆ ◆ ◆</strong></div><div class="objective"><strong id="litcount">0 / 5 ĐÈN</strong><span id="score">0 ĐIỂM</span><small id="goal">Thắp sáng cả hòn đảo</small></div><div class="bag"><span id="carried">0 / 10 ĐOM ĐÓM</span><div id="bag-cells"></div><small id="charm-status"></small></div><div class="cooldowns"><span id="dash-status">Shift · Lướt ✓</span><span id="pulse-status">F · Tỏa sáng ✓</span></div><canvas id="minimap" width="200" height="180" aria-label="Bản đồ đèn và Mây"></canvas><div id="interaction" class="hidden"><kbd>E</kbd><span>Nạp ánh sáng</span></div><div id="offscreen" class="hidden"></div><div id="warning" role="status"></div></section>
+<div id="toast" role="status"></div><div id="loading">Đang đánh thức hòn đảo…</div><div id="error" class="hidden" role="alert"></div>
+<section id="dialog" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="dialog-title"><div class="card"><span id="dialog-label" class="eyebrow">MỘT KHOẢNG LẶNG</span><h2 id="dialog-title">Đêm vẫn đang chờ.</h2><p id="dialog-text"></p><button id="resume" class="primary">Tiếp tục</button><button id="next" class="primary hidden">Đêm kế tiếp</button><button id="restart" class="secondary">Chơi lại đêm này</button><button id="dialog-settings" class="secondary">Cài đặt</button><button id="menu" class="secondary">Về menu</button><div id="save-score" class="hidden"><label>Tên người giữ đèn<input id="player-name" placeholder="May_01" maxlength="12" pattern="[A-Za-z0-9_]{3,12}"></label><button id="save-score-button">Lưu điểm</button><p id="save-status" role="status"></p></div></div></section>
+<section id="settings" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title"><div class="card settings-card"><h2 id="settings-title">Một hành trình vừa với bạn</h2><label>Âm lượng <input id="volume" type="range" min="0" max="100" step="5"></label><label>Độ nhạy chuột <input id="sensitivity" type="range" min="0.1" max="1" step="0.05"></label><label><input id="colorblind" type="checkbox"> Bảng màu dễ phân biệt</label><div id="accessibility-settings" class="hidden"><label><input id="reduce-motion" type="checkbox"> Giảm chuyển động / chớp màn hình</label><label><input id="large-text" type="checkbox"> Chữ lớn ×1.25</label><div id="key-bindings"></div><p id="binding-status" role="status"></p><button id="reset-bindings">Khôi phục phím mặc định</button></div><button id="settings-close" class="primary">Lưu và trở lại</button></div></section>
+<section id="leaderboard" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="leaderboard-title"><div class="card"><h2 id="leaderboard-title">Những người giữ đèn</h2><ol id="leaderboard-list"></ol><button id="leaderboard-close" class="primary">Trở lại</button></div></section>
+<div id="bench-info" class="hidden"></div></main><script type="module" src="app.mjs"></script></body></html>

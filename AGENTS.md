@@ -13,3 +13,5 @@
 - Khi ticket thay luật cũ, ghi lý do sửa test và chạy lại các kiểm chứng còn hiệu lực.
 - Giữ tài liệu gốc và harness; không ghi token, API key hoặc .env vào Git.
 - Không tạo tag phase hay Release cho phần chưa hoàn thành. Không viết lại lịch sử hoặc sửa thời gian để giả bằng chứng.
+- Phase 2: dùng số chuẩn Ticket-02, world.mjs là nguồn terrain/map cho CLI và renderer. Khi pause, CLI vẫn phải đọc đủ wall ticks để nhận resume; chỉ won/lost mới dừng sớm.
+- Không sửa bằng chứng phase cũ. verify tự chọn thư mục theo contract_version; thay luật cũ phải ghi lý do ở ghi chú phase.

@@ -1,0 +1,196 @@
+TAP version 13
+# Subtest: CLI keeps sparse fields, writes tick 0, scheduled snapshots and final end
+ok 1 - CLI keeps sparse fields, writes tick 0, scheduled snapshots and final end
+  ---
+  duration_ms: 132.5829
+  type: 'test'
+  ...
+# Subtest: zero ticks emits initial snapshot and end without collecting nearby mote
+ok 2 - zero ticks emits initial snapshot and end without collecting nearby mote
+  ---
+  duration_ms: 109.5671
+  type: 'test'
+  ...
+# Subtest: CLI stops early on terminal and event uses produced tick
+ok 3 - CLI stops early on terminal and event uses produced tick
+  ---
+  duration_ms: 106.063
+  type: 'test'
+  ...
+# Subtest: CLI deterministic byte for byte across independent processes
+ok 4 - CLI deterministic byte for byte across independent processes
+  ---
+  duration_ms: 260.8068
+  type: 'test'
+  ...
+# Subtest: invalid JSON, schema, duplicate ticks, missing files and invalid flags return 2
+ok 5 - invalid JSON, schema, duplicate ticks, missing files and invalid flags return 2
+  ---
+  duration_ms: 606.0452
+  type: 'test'
+  ...
+# Subtest: CLI continues wall ticks while paused and reads resume frame
+ok 6 - CLI continues wall ticks while paused and reads resume frame
+  ---
+  duration_ms: 125.264
+  type: 'test'
+  ...
+# Subtest: standard movement, sparse inputs, camera rotation and normalized diagonal
+ok 7 - standard movement, sparse inputs, camera rotation and normalized diagonal
+  ---
+  duration_ms: 9.7397
+  type: 'test'
+  ...
+# Subtest: night maps have 5/6/7 exact lanterns and unique mote points
+ok 8 - night maps have 5/6/7 exact lanterns and unique mote points
+  ---
+  duration_ms: 1.4614
+  type: 'test'
+  ...
+# Subtest: terrain: islands, narrow bridge, layered walls, ramps and outside
+ok 9 - terrain: islands, narrow bridge, layered walls, ramps and outside
+  ---
+  duration_ms: 0.2802
+  type: 'test'
+  ...
+# Subtest: jump uses 7m/s and gravity20, held jump does not repeat
+ok 10 - jump uses 7m/s and gravity20, held jump does not repeat
+  ---
+  duration_ms: 0.9839
+  type: 'test'
+  ...
+# Subtest: dash is exactly 12 ticks at14m/s, CD90 from start and edge-triggered
+ok 11 - dash is exactly 12 ticks at14m/s, CD90 from start and edge-triggered
+  ---
+  duration_ms: 0.4533
+  type: 'test'
+  ...
+# Subtest: standing dash faces +Z; airborne dash freezes height
+ok 12 - standing dash faces +Z; airborne dash freezes height
+  ---
+  duration_ms: 0.5527
+  type: 'test'
+  ...
+# Subtest: pickup inclusive XZ1 and height1.5; capacity10; no score for pickup
+ok 13 - pickup inclusive XZ1 and height1.5; capacity10; no score for pickup
+  ---
+  duration_ms: 0.5585
+  type: 'test'
+  ...
+# Subtest: scenario tick0 grants no points/events; lanterns merge by id
+ok 14 - scenario tick0 grants no points/events; lanterns merge by id
+  ---
+  duration_ms: 0.5175
+  type: 'test'
+  ...
+# Subtest: deposit partial, edge-triggered, tie chooses smaller id, point per deposited mote
+ok 15 - deposit partial, edge-triggered, tie chooses smaller id, point per deposited mote
+  ---
+  duration_ms: 13.9
+  type: 'test'
+  ...
+# Subtest: pulse selects 3D targets at activation, charges3, pushes4 over15 ticks and stuns120
+ok 16 - pulse selects 3D targets at activation, charges3, pushes4 over15 ticks and stuns120
+  ---
+  duration_ms: 6.2992
+  type: 'test'
+  ...
+# Subtest: insufficient pulse resource does not emit, repeated true does not trigger
+ok 17 - insufficient pulse resource does not emit, repeated true does not trigger
+  ---
+  duration_ms: 1.0008
+  type: 'test'
+  ...
+# Subtest: detection12, forget18 and prescribed shade states
+ok 18 - detection12, forget18 and prescribed shade states
+  ---
+  duration_ms: 0.8392
+  type: 'test'
+  ...
+# Subtest: hit only once per tick, drops floor(carried/2), immunity90, recoil60
+ok 19 - hit only once per tick, drops floor(carried/2), immunity90, recoil60
+  ---
+  duration_ms: 5.6734
+  type: 'test'
+  ...
+# Subtest: fall ignores invulnerability once, loses all motes, respawns after60 ticks
+ok 20 - fall ignores invulnerability once, loses all motes, respawns after60 ticks
+  ---
+  duration_ms: 0.8747
+  type: 'test'
+  ...
+# Subtest: lit lamp safe radius6 excludes shade and prevents damage
+ok 21 - lit lamp safe radius6 excludes shade and prevents damage
+  ---
+  duration_ms: 1.0345
+  type: 'test'
+  ...
+# Subtest: mote spawning exactly240, distinct points; shade first300 and following780
+ok 22 - mote spawning exactly240, distinct points; shade first300 and following780
+  ---
+  duration_ms: 20.8037
+  type: 'test'
+  ...
+# Subtest: pause advances tick only; timers/spawn freeze; resume consumes next active step
+ok 23 - pause advances tick only; timers/spawn freeze; resume consumes next active step
+  ---
+  duration_ms: 0.7165
+  type: 'test'
+  ...
+# Subtest: charm600 gives speed7.2 and no dash cooldown; respawns2700
+ok 24 - charm600 gives speed7.2 and no dash cooldown; respawns2700
+  ---
+  duration_ms: 1.9212
+  type: 'test'
+  ...
+# Subtest: drifter steal before shade hit; no flame loss; pulse returns stolen motes
+ok 25 - drifter steal before shade hit; no flame loss; pulse returns stolen motes
+  ---
+  duration_ms: 0.9473
+  type: 'test'
+  ...
+# Subtest: drifter scheduled at1200 in night2, none in night1
+ok 26 - drifter scheduled at1200 in night2, none in night1
+  ---
+  duration_ms: 25.0643
+  type: 'test'
+  ...
+# Subtest: jump pad launches14Y/24XZ and lands on second island
+ok 27 - jump pad launches14Y/24XZ and lands on second island
+  ---
+  duration_ms: 1.638
+  type: 'test'
+  ...
+# Subtest: night3 wind warning at1680, wind starts1800 and ends2100
+ok 28 - night3 wind warning at1680, wind starts1800 and ends2100
+  ---
+  duration_ms: 22.8142
+  type: 'test'
+  ...
+# Subtest: terminal no_flames priority and dawn loss remain frozen
+ok 29 - terminal no_flames priority and dawn loss remain frozen
+  ---
+  duration_ms: 1.1488
+  type: 'test'
+  ...
+# Subtest: same seed/input gives identical complete output across3 nights
+ok 30 - same seed/input gives identical complete output across3 nights
+  ---
+  duration_ms: 325.3591
+  type: 'test'
+  ...
+# Subtest: validation rejects malformed, duplicated and unordered data
+ok 31 - validation rejects malformed, duplicated and unordered data
+  ---
+  duration_ms: 0.8149
+  type: 'test'
+  ...
+1..31
+# tests 31
+# suites 0
+# pass 31
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1333.4242

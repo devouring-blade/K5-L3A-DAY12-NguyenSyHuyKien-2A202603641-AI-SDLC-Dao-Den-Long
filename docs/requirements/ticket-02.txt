@@ -1,0 +1,542 @@
+- banner "Artifact controls":
+  - button "Đảo Đèn Lồng Lab":
+    - generic: Đảo Đèn Lồng Lab
+    - generic: 
+  - dialog "Duplicate this artifact":
+    - heading "Duplicate this artifact" [level=2]
+    - generic: New
+    - button "Dismiss":
+      - generic: 
+    - text: Make a copy and it’s yours to edit and remix.
+    - button "Got it":
+      - generic: Got it
+  - status
+  - generic: Content is user-generated and unverified.
+  - img "Can view":
+    - generic: 
+    - text: Can view
+  - button "You":
+    - group "You":
+      - img "Nguyễn Sỹ Huy Kiên": NK
+  - button "Share":
+    - generic: 
+  - status
+  - alert
+- main:
+  - iframe [active] [id="frame-content"] [name="{\"hot\":{\"k\":\"0u2o86k0x4obfp\"},\"usable\":[\"db\"],\"n\":\"71hca0qz9ye\"}"]:
+    - generic: Đảo Đèn Lồng Day 12 · AI SDLC Lab
+    - tablist "Các phase":
+      - tab "Phase 1 PRD-0":
+        - generic: Phase 1
+        - generic: PRD-0
+      - tab "Phase 2 Ticket-02 · Ba hòn đảo" [selected]:
+        - generic: Phase 2
+        - generic: Ticket-02 · Ba hòn đảo
+      - tab "Phase 3 Ticket-03 · Đèn cạn dầu":
+        - generic: Phase 3
+        - generic: Ticket-03 · Đèn cạn dầu
+      - tab "Phase 4 Ticket-04 · Bình minh v1.0.0 · đang diễn ra":
+        - generic: Phase 4
+        - generic: Ticket-04 · Bình minh v1.0.0 · đang diễn ra
+    - button "Bật nền 3D"
+    - main:
+      - heading "TICKET-02 — \"Ba hòn đảo\" (Phase 2)" [level=1]
+      - blockquote:
+        - paragraph:
+          - text: "Loại: Feature + chuẩn hóa · Ưu tiên: Cao · Tag nộp:"
+          - code: phase-2
+          - text: "· Contract:"
+          - strong: v1.1
+      - heading "Bối cảnh" [level=2]
+      - paragraph:
+        - text: "Đêm 1 đã chạy được. Nhà sản xuất chơi thử bản của các bạn và thấy mỗi bản cho cảm giác điều khiển rất khác nhau. Ticket này có hai việc:"
+        - strong: (1) đồng bộ số liệu chuẩn
+        - text: để mọi bản cho cảm giác giống nhau, và
+        - strong: (2) mở rộng game thành 3 Đêm
+        - text: cùng các tính năng mới.
+      - separator
+      - blockquote:
+        - paragraph:
+          - strong: "Về sáng tạo:"
+          - text: những gì bạn đã sáng tạo thêm ở Phase 1 vẫn được giữ và bạn vẫn được thêm ý riêng, kể cả
+          - strong: nhân vật mới và kẻ địch mới
+          - text: (ngoài Bóng Mực và Gió Lạc), miễn là
+          - strong: số liệu chuẩn, bản đồ chuẩn và Test Contract dưới đây không bị đổi
+          - text: và phần thêm không làm đổi đầu ra headless (ví dụ tắt khi chạy headless).
+      - heading "Phần 1 — Số liệu chuẩn (bắt buộc, thay mọi giá trị bạn tự chọn)" [level=2]
+      - paragraph: "Logic chạy 60 tick/giây. Đơn vị: mét, giây. Trục Y hướng lên."
+      - table:
+        - rowgroup:
+          - row "Nhóm Hằng số Giá trị":
+            - columnheader "Nhóm"
+            - columnheader "Hằng số"
+            - columnheader "Giá trị"
+        - rowgroup:
+          - row "Di chuyển Tốc độ chạy 6.0 m/s; tăng tốc/dừng trong ≤ 0.1 s; điều khiển trên không đầy đủ":
+            - cell "Di chuyển"
+            - cell "Tốc độ chạy"
+            - cell "6.0 m/s; tăng tốc/dừng trong ≤ 0.1 s; điều khiển trên không đầy đủ"
+          - row "Nhảy Vận tốc 7.0 m/s, trọng lực −20 m/s², chỉ nhảy khi chạm đất":
+            - cell
+            - cell "Nhảy"
+            - cell "Vận tốc 7.0 m/s, trọng lực −20 m/s², chỉ nhảy khi chạm đất"
+          - row "Lướt (mới) Tốc độ / thời gian / hồi chiêu 14 m/s / 0.2 s / 1.5 s (tính từ lúc bắt đầu lướt)":
+            - cell "Lướt (mới)"
+            - cell "Tốc độ / thời gian / hồi chiêu"
+            - cell "14 m/s / 0.2 s / 1.5 s (tính từ lúc bắt đầu lướt)"
+          - row "Hướng Hướng đang di chuyển; nếu đứng yên thì hướng nhân vật đang quay mặt. Lướt trên không giữ nguyên độ cao. Không bất tử khi lướt":
+            - cell
+            - cell "Hướng"
+            - cell "Hướng đang di chuyển; nếu đứng yên thì hướng nhân vật đang quay mặt. Lướt trên không giữ nguyên độ cao. Không bất tử khi lướt"
+          - row "Đom đóm Sức chứa 10":
+            - cell "Đom đóm"
+            - cell "Sức chứa"
+            - cell "10"
+          - row "Nhặt Tự động khi khoảng cách XZ ≤ 1.0 m và chênh cao giữa chân Mây và mặt đất nơi đặt đom đóm ≤ 1.5 m":
+            - cell
+            - cell "Nhặt"
+            - cell "Tự động khi khoảng cách XZ ≤ 1.0 m và chênh cao giữa chân Mây và mặt đất nơi đặt đom đóm ≤ 1.5 m":
+              - text: Tự động khi khoảng cách XZ ≤ 1.0 m
+              - strong: và
+              - text: chênh cao giữa chân Mây và mặt đất nơi đặt đom đóm ≤ 1.5 m
+          - row "Số lượng 20 lúc bắt đầu tại 20 điểm khác nhau; trần 30; tại các tick 240, 480, … sinh thêm 1 ở một điểm trống nếu dưới 30; hết điểm trống thì bỏ lượt":
+            - cell
+            - cell "Số lượng"
+            - cell "20 lúc bắt đầu tại 20 điểm khác nhau; trần 30; tại các tick 240, 480, … sinh thêm 1 ở một điểm trống nếu dưới 30; hết điểm trống thì bỏ lượt"
+          - row "Đèn lồng Chi phí thắp 10 đom đóm, nạp nhiều lần được, đèn nhớ tiến độ":
+            - cell "Đèn lồng"
+            - cell "Chi phí thắp"
+            - cell "10 đom đóm, nạp nhiều lần được, đèn nhớ tiến độ"
+          - row "Tương tác Trong bán kính 2.0 m; mỗi lần bấm nạp min(đang mang, còn thiếu) vào một đèn. Chỉ xét đèn chưa sáng; chọn đèn gần nhất, bằng nhau thì id nhỏ hơn":
+            - cell
+            - cell "Tương tác"
+            - cell "Trong bán kính 2.0 m; mỗi lần bấm nạp min(đang mang, còn thiếu) vào một đèn. Chỉ xét đèn chưa sáng; chọn đèn gần nhất, bằng nhau thì id nhỏ hơn":
+              - text: Trong bán kính 2.0 m; mỗi lần bấm nạp
+              - code: min(đang mang, còn thiếu)
+              - text: vào
+              - strong: một
+              - text: đèn. Chỉ xét đèn chưa sáng; chọn đèn gần nhất, bằng nhau thì id nhỏ hơn
+          - 'row "Vùng an toàn Đèn đã sáng tạo vùng bán kính 6 m: Bóng Mực ở ngoài bị chặn ở mép 6 m. Bóng đang ở trong lúc đèn vừa thắp bị đẩy ra mép trong tối đa 30 tick và không gây sát thương trong lúc đó"':
+            - cell
+            - cell "Vùng an toàn"
+            - 'cell "Đèn đã sáng tạo vùng bán kính 6 m: Bóng Mực ở ngoài bị chặn ở mép 6 m. Bóng đang ở trong lúc đèn vừa thắp bị đẩy ra mép trong tối đa 30 tick và không gây sát thương trong lúc đó"':
+              - text: Đèn
+              - strong: đã sáng
+              - text: "tạo vùng bán kính 6 m: Bóng Mực ở ngoài bị chặn ở mép 6 m. Bóng đang ở trong lúc đèn vừa thắp bị đẩy ra mép trong tối đa 30 tick và không gây sát thương trong lúc đó"
+          - row "Tỏa Sáng Chi phí / bán kính / hồi chiêu 3 đom đóm / 5 m / 3 s":
+            - cell "Tỏa Sáng"
+            - cell "Chi phí / bán kính / hồi chiêu"
+            - cell "3 đom đóm / 5 m / 3 s"
+          - row "Hiệu ứng Tâm = chân Mây + 0.8 m. Mục tiêu chốt ngay tick kích hoạt (khoảng cách 3D tới tâm Bóng Mực ≤ 5 m). Bóng Mực choáng 120 tick, trong 15 tick đầu bị đẩy lùi tổng 4 m theo phương ngang (dừng nếu gặp vật cản; trùng vị trí thì đẩy theo +X). Pulse lại làm mới choáng và đẩy lùi. Không chết. Không đủ 3 đom đóm thì không kích hoạt":
+            - cell
+            - cell "Hiệu ứng"
+            - cell "Tâm = chân Mây + 0.8 m. Mục tiêu chốt ngay tick kích hoạt (khoảng cách 3D tới tâm Bóng Mực ≤ 5 m). Bóng Mực choáng 120 tick, trong 15 tick đầu bị đẩy lùi tổng 4 m theo phương ngang (dừng nếu gặp vật cản; trùng vị trí thì đẩy theo +X). Pulse lại làm mới choáng và đẩy lùi. Không chết. Không đủ 3 đom đóm thì không kích hoạt"
+          - 'row "Bóng Mực Tốc độ 4.0 m/s (Đêm 3: 4.5 m/s)"':
+            - cell "Bóng Mực"
+            - cell "Tốc độ"
+            - 'cell "4.0 m/s (Đêm 3: 4.5 m/s)"'
+          - row "Phát hiện / bỏ đuổi 12 m / 18 m":
+            - cell
+            - cell "Phát hiện / bỏ đuổi"
+            - cell "12 m / 18 m"
+          - row "Chạm Khoảng cách XZ ≤ 1.0 m và chênh cao ≤ 1.5 m. Tối đa 1 lần mất Ngọn Lửa mỗi tick. Bóng gây hit lùi 2 m trong 60 tick (recoil); bóng chạm lúc Mây bất tử không làm gì":
+            - cell
+            - cell "Chạm"
+            - cell "Khoảng cách XZ ≤ 1.0 m và chênh cao ≤ 1.5 m. Tối đa 1 lần mất Ngọn Lửa mỗi tick. Bóng gây hit lùi 2 m trong 60 tick (recoil); bóng chạm lúc Mây bất tử không làm gì":
+              - text: Khoảng cách XZ ≤ 1.0 m và chênh cao ≤ 1.5 m. Tối đa
+              - strong: "1"
+              - text: lần mất Ngọn Lửa mỗi tick. Bóng gây hit lùi 2 m trong 60 tick (
+              - code: recoil
+              - text: ); bóng chạm lúc Mây bất tử không làm gì
+          - row "Lịch sinh 2 con tại tick 300, sau đó 1 con mỗi khoảng sinh (tick 300 + 480k ở Đêm 1); hết điểm hợp lệ thì bỏ lượt. Id S1, S2, … theo thứ tự sinh":
+            - cell
+            - cell "Lịch sinh"
+            - cell "2 con tại tick 300, sau đó 1 con mỗi khoảng sinh (tick 300 + 480k ở Đêm 1); hết điểm hợp lệ thì bỏ lượt. Id S1, S2, … theo thứ tự sinh":
+              - text: 2 con tại tick 300, sau đó 1 con mỗi
+              - code: khoảng sinh
+              - text: (tick 300 + 480k ở Đêm 1); hết điểm hợp lệ thì bỏ lượt. Id
+              - code: S1
+              - text: ","
+              - code: S2
+              - text: ", … theo thứ tự sinh"
+          - row "Bị đánh Hậu quả −1 Ngọn Lửa; rơi floor(đang mang / 2) đom đóm ra vành 1.5–2.5 m quanh Mây (tồn tại 480 tick, nhặt lại được từ tick sau); bất tử 90 tick":
+            - cell "Bị đánh"
+            - cell "Hậu quả"
+            - cell "−1 Ngọn Lửa; rơi floor(đang mang / 2) đom đóm ra vành 1.5–2.5 m quanh Mây (tồn tại 480 tick, nhặt lại được từ tick sau); bất tử 90 tick":
+              - text: −1 Ngọn Lửa; rơi
+              - code: floor(đang mang / 2)
+              - text: đom đóm ra vành 1.5–2.5 m quanh Mây (tồn tại 480 tick, nhặt lại được từ tick sau); bất tử 90 tick
+          - 'row "Rơi khỏi đảo (Y < −10) Xảy ra đúng 1 lần, bỏ qua bất tử: −1 Ngọn Lửa, mất toàn bộ đom đóm. Chờ 60 tick (không nhặt, không bị chạm), rồi hồi sinh ở điểm xuất phát, vận tốc 0, bất tử 90 tick. Hết Ngọn Lửa thì thua ngay, không hồi sinh"':
+            - cell
+            - cell "Rơi khỏi đảo (Y < −10)"
+            - 'cell "Xảy ra đúng 1 lần, bỏ qua bất tử: −1 Ngọn Lửa, mất toàn bộ đom đóm. Chờ 60 tick (không nhặt, không bị chạm), rồi hồi sinh ở điểm xuất phát, vận tốc 0, bất tử 90 tick. Hết Ngọn Lửa thì thua ngay, không hồi sinh"':
+              - text: Xảy ra
+              - strong: đúng 1 lần, bỏ qua bất tử
+              - text: ": −1 Ngọn Lửa, mất toàn bộ đom đóm. Chờ 60 tick (không nhặt, không bị chạm), rồi hồi sinh ở điểm xuất phát, vận tốc 0, bất tử 90 tick. Hết Ngọn Lửa thì thua ngay, không hồi sinh"
+          - row "Máu Ngọn Lửa 3, hồi đầy đầu mỗi Đêm":
+            - cell "Máu"
+            - cell "Ngọn Lửa"
+            - cell "3, hồi đầy đầu mỗi Đêm"
+          - row "Thời gian Đêm 1 / 2 / 3 300 / 330 / 360 s":
+            - cell "Thời gian"
+            - cell "Đêm 1 / 2 / 3"
+            - cell "300 / 330 / 360 s"
+          - 'row "Thắng / thua Sau mỗi tick: hết Ngọn Lửa → luôn thua (no_flames); còn sống và tất cả đèn sáng → thắng (kể cả đúng tick hết giờ); còn lại mà hết giờ → thua (dawn)"':
+            - cell "Thắng / thua"
+            - cell
+            - 'cell "Sau mỗi tick: hết Ngọn Lửa → luôn thua (no_flames); còn sống và tất cả đèn sáng → thắng (kể cả đúng tick hết giờ); còn lại mà hết giờ → thua (dawn)"':
+              - text: "Sau mỗi tick: hết Ngọn Lửa →"
+              - strong: luôn thua
+              - text: (
+              - code: no_flames
+              - text: ); còn sống và tất cả đèn sáng → thắng (kể cả đúng tick hết giờ); còn lại mà hết giờ → thua (
+              - code: dawn
+              - text: )
+      - paragraph:
+        - strong: "Điểm (chuẩn hóa):"
+        - text: "+10 mỗi đom đóm nạp · +100 mỗi đèn thắp · +5 mỗi Bóng Mực trúng Tỏa Sáng (mỗi con mỗi lần, kể cả con đang choáng) · khi thắng: +"
+        - code: floor(giây còn lại) × 2
+        - text: + 50 × Ngọn Lửa còn lại. Tổng điểm game là tổng điểm các Đêm đã thắng.
+      - heading "Thứ tự xử lý trong một tick (bắt buộc)" [level=3]
+      - list:
+        - text: Đọc input (xử lý
+        - code: pause
+        - text: trước; nếu vừa tạm dừng thì dừng bước ở đây).
+        - listitem: "Giảm các bộ đếm: thời gian, hồi chiêu, bất tử, choáng, bùa, TTL đom đóm rơi, hồi bùa."
+        - listitem: Di chuyển Mây (nhảy, lướt, bục nhảy, gió) rồi kiểm tra rơi khỏi đảo.
+        - listitem: Nhặt đom đóm và bùa.
+        - listitem: Tương tác với đèn.
+        - listitem: Cập nhật vùng an toàn.
+        - listitem: Tỏa Sáng.
+        - listitem: Di chuyển Bóng Mực và Gió Lạc.
+        - listitem: "Chạm: Gió Lạc cướp trước, rồi Bóng Mực gây hit (xét theo id tăng dần)."
+        - listitem: Sinh đom đóm, Bóng Mực, Gió Lạc theo lịch (thực thể mới chỉ tương tác được từ tick sau).
+        - listitem: Xét thắng/thua.
+        - listitem: Ghi snapshot nếu tới lượt.
+      - paragraph:
+        - text: "Khi đang tạm dừng:"
+        - code: tick
+        - text: vẫn tăng nhưng
+        - code: sim_tick
+        - text: ", thời gian, hồi chiêu, spawn, TTL đều đứng yên; snapshot ghi"
+        - code: "state: \"paused\""
+        - text: .
+      - heading "Phần 2 — Bản đồ chuẩn" [level=2]
+      - paragraph: Góc đo từ trục +X, ngược chiều kim đồng hồ khi nhìn từ trên xuống, trên mặt phẳng XZ.
+      - heading "Đêm 1 — Đảo Bến (chuẩn hóa lại)" [level=3]
+      - list:
+        - listitem: Đảo tròn tâm (0,0,0), bán kính 40 m. Ngoài 40 m là biển mây (rơi).
+        - listitem: Xuất phát (0,0,0), quay mặt về +Z.
+        - listitem: "Đèn: L1 (0,0,25) · L2 (23.8,0,7.7) · L3 (14.7,0,−20.2) · L4 (−14.7,0,−20.2) · L5 (−23.8,0,7.7)."
+        - listitem: "Điểm sinh đom đóm: 8 điểm trên bán kính 12 m (mỗi 45°) và 16 điểm trên bán kính 33 m (mỗi 22.5°)."
+        - listitem: Bóng Mực sinh trên 12 điểm bán kính 37 m (15°, 45°, …), cách người chơi ≥ 15 m; 2 con lúc giây thứ 5, sau đó mỗi 8 s; tối đa 6.
+      - heading "Đêm 2 — Đảo Cau (mới)" [level=3]
+      - list:
+        - text: Hai đảo tròn bán kính 28 m, tâm A (0,0,0) và B (70,0,0), nối bằng
+        - strong: cầu tre
+        - text: x ∈ [26, 44], z ∈ [−2, 2], không lan can.
+        - strong: Bục nhảy
+        - text: "hình tròn bán kính 1 m tại (20,0,18) và (50,0,−18): chân Mây chạm bục thì được bắn lên với vận tốc Y 14 m/s và vận tốc ngang"
+        - strong: 24 m/s hướng về tâm đảo kia
+        - text: . Vận tốc phóng giữ nguyên tới khi chạm đất (phím di chuyển không ghi đè; vẫn được lướt). Bay khoảng 1.4 s, đáp trong đảo đích.
+        - listitem: "Điểm sinh đom đóm mỗi đảo: 4 điểm trên bán kính 10 m (0°, 90°, 180°, 270°) và 8 điểm trên bán kính 22 m (mỗi 45°). Bóng Mực sinh trên 8 điểm bán kính 26 m mỗi đảo (22.5°, 67.5°, …)."
+        - listitem: "Đèn: (0,0,20), (17,0,−10), (−17,0,−10), (70,0,20), (87,0,−10), (53,0,−10), id L1…L6 theo thứ tự này."
+        - listitem: "Bóng Mực: sinh mỗi 7 s, tối đa 8."
+      - heading "Đêm 3 — Đảo Chuông (mới)" [level=3]
+      - list:
+        - text: Đảo tròn bán kính 45 m, có
+        - strong: 3 tầng
+        - text: ": tầng 0 (Y=0) toàn đảo; tầng 1 (Y=3) là vành khăn bán kính 12–24 m ở nửa có z > 0; tầng 2 (Y=6) là đĩa bán kính 8 m ở tâm."
+        - listitem: Mép các tầng là vách đứng (không đi lên được; bước ra thì rơi xuống tầng dưới).
+        - listitem: "2 dốc thẳng rộng 3 m dọc theo bán kính ở góc 30° và 150°: chân dốc ở bán kính 30 m (Y=0), đỉnh dốc ở bán kính 24 m (Y=3)."
+        - text: Bục nhảy bán kính 1 m tại
+        - strong: (0,3,13)
+        - text: ": vận tốc Y 12 m/s và vận tốc ngang 8 m/s hướng −Z, giữ tới khi chạm đất → đáp lên tầng 2."
+        - listitem: Tháp chuông cao 8 m ở tâm tầng 2, hình trụ bán kính 2 m, không leo được.
+        - listitem: "Điểm sinh đom đóm (30): tầng 0 có 18 điểm bán kính 34 m (mỗi 20° từ 0°); tầng 1 có 8 điểm bán kính 18 m (20°, 40°, …, 160°); tầng 2 có 4 điểm bán kính 5 m (45°, 135°, 225°, 315°). Bóng Mực sinh trên 16 điểm bán kính 43 m (mỗi 22.5°)."
+        - listitem: "Đèn (L1…L7): (0,6,6), (18,3,10), (−18,3,10), (35,0,−10), (−35,0,−10), (20,0,−35), (−20,0,−35)."
+        - strong: "Gió mạnh:"
+        - text: mỗi 30 s có một cơn gió kéo dài 5 s theo hướng ngẫu nhiên, đẩy người chơi 2 m/s; báo trước 2 s bằng lá bay và âm thanh.
+        - listitem: "Bóng Mực: sinh mỗi 6 s, tối đa 10."
+      - heading "Phần 3 — Tính năng mới" [level=2]
+      - list:
+        - strong: Gió Lạc
+        - text: "(Đêm 2 và 3): dải lụa xám xanh bay nhanh (7 m/s), tối đa 2 con, sinh tại tick 1200, 2400, … trên điểm sương ngẫu nhiên, id"
+        - code: D1
+        - text: ","
+        - code: D2
+        - text: ", …"
+        - list:
+          - text: "Trạng thái:"
+          - code: idle
+          - text: (lượn chậm 2 m/s) →
+          - code: chase
+          - text: →
+          - code: flee
+          - text: →
+          - code: removed
+          - text: .
+          - code: idle → chase
+          - text: khi Mây mang
+          - strong: ≥ 5 đom đóm
+          - text: và cách ≤ 15 m (kiểm tra mỗi tick); điều kiện mất thì về
+          - code: idle
+          - text: .
+          - text: "Chạm (XZ ≤ 1.2 m):"
+          - strong:
+            - text: cướp
+            - code: min(3, đang mang)
+            - text: đom đóm
+          - text: ", chuyển"
+          - code: flee
+          - text: (bay ra xa Mây 7 m/s trong 240 tick rồi biến mất cùng số đã cướp). Mỗi con chỉ cướp 1 lần.
+          - text: Tỏa Sáng trúng Gió Lạc đang
+          - code: chase
+          - text: → nó chuyển
+          - code: flee
+          - text: không cướp; trúng lúc
+          - code: flee
+          - text: có mang đồ → thả lại toàn bộ đom đóm đã cướp tại chỗ (thành đom đóm rơi), biến mất sau 120 tick.
+          - listitem: Không làm mất Ngọn Lửa; vùng an toàn của đèn không chặn Gió Lạc; bất tử của Mây không ngăn bị cướp.
+        - strong: Bùa Gió
+        - text: ": lá bùa đỏ viền vàng, id"
+        - code: C1
+        - text: ","
+        - code: C2
+        - text: ". Nhặt theo luật như đom đóm. Hiệu lực 600 tick (nhặt lại thì làm mới): tốc độ chạy"
+        - strong: 7.2 m/s
+        - text: "và Lướt không hồi chiêu (vẫn cần nhấn lại nút; nhấn khi đang lướt bị bỏ qua; lướt vẫn 14 m/s trong 12 tick). Bùa xuất hiện lại sau 2700 tick. Vị trí: Đêm 2 (35,0,0); Đêm 3 (30,0,25) và (−30,0,25)."
+        - strong: Chuỗi 3 Đêm
+        - text: ": Menu chính → giới thiệu Đêm (tên đảo, lời Ông Đăng) → chơi → kết quả → Đêm kế tiếp. Thắng Đêm 3 thì hiện màn hình"
+        - strong: Bình Minh
+        - text: với tổng điểm. Thua thì được chơi lại Đêm đó.
+        - strong: Tạm dừng
+        - text: "(Esc/P): logic dừng hoàn toàn. Có Tiếp tục / Chơi lại Đêm / Cài đặt / Về menu."
+        - strong: Cài đặt
+        - text: ": âm lượng và độ nhạy chuột,"
+        - strong: được lưu
+        - text: giữa các lần mở game.
+        - strong: Âm thanh
+        - text: ": nhạc nền đêm và hiệu ứng cho: nhặt, thắp đèn, tỏa sáng, bị đánh, nhảy, lướt, thắng, thua, Bóng Mực xuất hiện, đếm ngược 10 s cuối."
+        - strong: HUD đầy đủ
+        - text: ": Ngọn Lửa (trên trái), đồng hồ"
+        - code: mm:ss
+        - text: (trên giữa, đổi màu đỏ và nhấp nháy khi ≤ 30 s), đèn
+        - code: k/n
+        - text: và điểm (trên phải), thanh đom đóm 10 ô (dưới giữa), biểu tượng hồi chiêu Lướt và Tỏa Sáng (dưới phải), nhắc "E — Nạp ánh sáng (x/10)" khi đứng gần đèn, mũi tên chỉ tới đèn chưa sáng gần nhất khi nó ở ngoài màn hình.
+        - strong: Bảng màu chuẩn
+        - text: "(sai lệch tối đa 10% mỗi kênh RGB; áp dụng cho các thành phần liệt kê, màu cho chi tiết khác do bạn tự chọn):"
+      - table:
+        - rowgroup:
+          - row "Dùng cho Hex":
+            - columnheader "Dùng cho"
+            - columnheader "Hex"
+        - rowgroup:
+          - 'row "Trời đêm / sương #0E1430 / #1B2350"':
+            - cell "Trời đêm / sương"
+            - 'cell "#0E1430 / #1B2350"':
+              - code: "#0E1430"
+              - text: /
+              - code: "#1B2350"
+          - 'row "Cỏ / cát / gỗ / biển mây #2F5D50 / #C9B48A / #6B4A2F / #12384A"':
+            - cell "Cỏ / cát / gỗ / biển mây"
+            - 'cell "#2F5D50 / #C9B48A / #6B4A2F / #12384A"':
+              - code: "#2F5D50"
+              - text: /
+              - code: "#C9B48A"
+              - text: /
+              - code: "#6B4A2F"
+              - text: /
+              - code: "#12384A"
+          - 'row "Đèn sáng / lõi / đèn tắt #FFB347 / #FFE9B0 / #5B5F6E"':
+            - cell "Đèn sáng / lõi / đèn tắt"
+            - 'cell "#FFB347 / #FFE9B0 / #5B5F6E"':
+              - code: "#FFB347"
+              - text: /
+              - code: "#FFE9B0"
+              - text: /
+              - code: "#5B5F6E"
+          - 'row "Đom đóm lõi / quầng #FFF6C2 / #FFE58A"':
+            - cell "Đom đóm lõi / quầng"
+            - 'cell "#FFF6C2 / #FFE58A"':
+              - code: "#FFF6C2"
+              - text: /
+              - code: "#FFE58A"
+          - 'row "Bóng Mực thân / viền / bị choáng #120A1A / #7A3CFF / #3A3450"':
+            - cell "Bóng Mực thân / viền / bị choáng"
+            - 'cell "#120A1A / #7A3CFF / #3A3450"':
+              - code: "#120A1A"
+              - text: /
+              - code: "#7A3CFF"
+              - text: /
+              - code: "#3A3450"
+          - 'row "Áo Mây / khăn Mây và Bùa Gió #E8E2D0 / #C8102E"':
+            - cell "Áo Mây / khăn Mây và Bùa Gió"
+            - 'cell "#E8E2D0 / #C8102E"':
+              - code: "#E8E2D0"
+              - text: /
+              - code: "#C8102E"
+          - 'row "Viền vàng, điểm số / Gió Lạc #F2C14E / #8FA3B8"':
+            - cell "Viền vàng, điểm số / Gió Lạc"
+            - 'cell "#F2C14E / #8FA3B8"':
+              - code: "#F2C14E"
+              - text: /
+              - code: "#8FA3B8"
+          - 'row "UI nguy hiểm / chữ UI #FF5A5F / #F5F1E6"':
+            - cell "UI nguy hiểm / chữ UI"
+            - 'cell "#FF5A5F / #F5F1E6"':
+              - code: "#FF5A5F"
+              - text: /
+              - code: "#F5F1E6"
+      - paragraph:
+        - text: "Ánh sáng môi trường tăng theo tiến độ: cường độ ="
+        - code: 0.15 + 0.55 × (đèn sáng / tổng đèn)
+        - text: .
+      - heading "Phần 4 — Test Contract v1.1 (thay đổi so với v1.0)" [level=2]
+      - list:
+        - code: "contract_version: \"1.1\""
+        - text: ;
+        - code: tuning
+        - text: phải
+        - strong: khớp số chuẩn
+        - text: ở Phần 1, thêm các khóa
+        - code: dash_speed
+        - text: ","
+        - code: dash_duration_s
+        - text: ","
+        - code: dash_cooldown_s
+        - text: ","
+        - code: night2_duration_s
+        - text: ","
+        - code: night3_duration_s
+        - text: .
+        - code: "--night"
+        - text: nhận 1, 2, 3.
+        - text: Snapshot gốc thêm
+        - code: night
+        - text: ","
+        - code: "wind {active, dir_deg}"
+        - text: .
+        - code: player
+        - text: thêm
+        - code: vel
+        - text: ","
+        - code: grounded
+        - text: ","
+        - code: invuln
+        - text: ","
+        - code: dash_cd_s
+        - text: ","
+        - code: pulse_cd_s
+        - text: ","
+        - code: charm_s
+        - text: .
+        - text: Snapshot thêm các mảng
+        - strong: bắt buộc
+        - text: ":"
+        - code: motes
+        - text: (
+        - code: id
+        - text: ","
+        - code: pos
+        - text: ","
+        - code: kind
+        - text: =
+        - code: random
+        - text: /
+        - code: dropped
+        - text: ","
+        - code: ttl_s
+        - text: ),
+        - code: drifters
+        - text: (
+        - code: id
+        - text: ","
+        - code: pos
+        - text: ","
+        - code: state
+        - text: ","
+        - code: stolen
+        - text: ),
+        - code: charms
+        - text: (
+        - code: id
+        - text: ","
+        - code: available
+        - text: ","
+        - code: respawn_s
+        - text: ).
+        - text: Scenario thêm
+        - code: "player.{invuln_ticks, dash_cd_ticks, pulse_cd_ticks, charm_ticks}"
+        - text: ","
+        - code: "shades[].{state, state_ticks_left}"
+        - text: ","
+        - code: drifters
+        - text: ","
+        - code: charms
+        - text: ", cờ"
+        - code: random_drifters
+        - text: ","
+        - code: wind_enabled
+        - text: . Các mảng
+        - code: drifters
+        - text: ","
+        - code: charms
+        - text: thay thế danh sách mặc định.
+        - text: Input thêm
+        - code: dash
+        - text: và
+        - code: pause
+        - text: (đều kích hoạt khi chuyển false → true).
+        - text: "Sự kiện mới:"
+        - code: "dash {}"
+        - text: ","
+        - code: "charm_picked {charm_id, charm_ticks}"
+        - text: ","
+        - code: "drifter_steal {drifter_id, amount, carried}"
+        - text: ","
+        - code: "drifter_drop {drifter_id, amount}"
+        - text: ","
+        - code: "night_start {night}"
+        - text: ","
+        - code: "paused {}"
+        - text: ","
+        - code: "resumed {}"
+        - text: .
+        - code: player_hit
+        - text: do rơi thêm trường
+        - code: lost
+        - text: .
+        - text: "Từ v1.1, trạng thái Bóng Mực phải dùng đúng tên:"
+        - code: spawning
+        - text: ","
+        - code: wander
+        - text: ","
+        - code: chase
+        - text: ","
+        - code: recoil
+        - text: ","
+        - code: stunned
+        - text: .
+        - text: Chạy headless một Đêm đầy đủ (tối đa 21.600 tick) phải xong trong
+        - strong: ≤ 30 giây
+        - text: .
+      - heading "Định nghĩa hoàn thành (DoD)" [level=2]
+      - list:
+        - listitem: Có bằng chứng game chạy đúng các yêu cầu của phase (định dạng tự chọn).
+        - listitem: Mọi test ẩn Phase 1 vẫn đạt khi chạy với số chuẩn (regression).
+        - listitem: Tài liệu spec của bạn (tên và vị trí tự chọn) có acceptance criteria cho từng mục ở Phần 3.
+        - listitem: File hướng dẫn agent (AGENTS.md hoặc tương đương) và các skill được cập nhật cho phạm vi mới (lịch sử git phải thể hiện).
+        - listitem: Test của bạn có ít nhất 1 scenario headless cho mỗi tính năng mới.
+        - listitem: Bản thường đạt ≥ 30 FPS trung bình ở 1280×720.
+    - button "Hỏi trợ giảng"
+    - contentinfo: Đảo Đèn Lồng · Day 12 AI SDLC Lab. Các phase mới xuất hiện ở thanh trên khi giảng viên phát hành.
+- alert
+- alert
+- status
+- status
+- status
+- status
+- status
+- status
+- status

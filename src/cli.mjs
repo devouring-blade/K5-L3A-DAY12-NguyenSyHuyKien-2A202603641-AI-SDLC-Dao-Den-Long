@@ -19,20 +19,21 @@ function main() {
   const night = int('night', 1, 1);
   const ticks = int('ticks');
   const every = int('snapshot-every', 10, 1);
-  if (night !== 1) throw new Error('Phase 1 supports --night 1 only');
+  if (night > 3) throw new Error('--night must be 1, 2 or 3');
   if (!options.out) throw new Error('--out is required');
   const read = path => JSON.parse(fs.readFileSync(path, 'utf8'));
   const { tuning } = read(new URL('../game.contract.json', import.meta.url));
   const scenario = options.scenario ? read(options.scenario) : {};
   const frames = options.inputs ? validateInputs(read(options.inputs)) : [];
-  const game = new Game(tuning, seed, scenario);
+  const game = new Game(tuning, seed, scenario, night);
   let fd;
   try {
     fd = fs.openSync(options.out, 'w');
     const line = value => fs.writeSync(fd, JSON.stringify(value) + '\n');
     line(game.snapshot());
+    line({type:'event',tick:0,name:'night_start',data:{night}});
     let frame = 0;
-    for (let k = 0; k < ticks && game.state === 'playing'; k++) {
+    for (let k = 0; k < ticks && !['won','lost'].includes(game.state); k++) {
       const patch = frames[frame]?.tick === k ? frames[frame++] : {};
       const { tick: ignored, ...input } = patch;
       for (const event of game.step(input)) line(event);

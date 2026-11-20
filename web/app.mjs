@@ -1,332 +1,101 @@
 import * as THREE from './vendor/three.module.js';
-import { Game, DT, ISLAND_RADIUS } from './simulation.mjs';
-import { tuning } from './config.mjs';
-
-const $ = id => document.getElementById(id);
-let renderer;
-try {
-  renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-} catch {
-  $('loading').classList.add('hidden');
-  $('error').classList.remove('hidden');
-  $('error').textContent = 'Trình duyệt chưa bật WebGL. Hãy bật tăng tốc đồ họa hoặc mở bằng Chrome, Firefox, Edge mới. Chế độ headless vẫn chạy độc lập bằng Node.js.';
-  throw new Error('WebGL is unavailable');
-}
-renderer.setPixelRatio(Math.min(devicePixelRatio, 1.7));
-renderer.setSize(innerWidth, innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.25;
-$('scene').appendChild(renderer.domElement);
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color('#102a39');
-scene.fog = new THREE.FogExp2('#173946', 0.0085);
-const camera = new THREE.PerspectiveCamera(47, innerWidth / innerHeight, 0.1, 250);
-const ambient = new THREE.HemisphereLight('#c9e5e4', '#152b31', 2.1);
-scene.add(ambient);
-const moonlight = new THREE.DirectionalLight('#b9d9e1', 2.1);
-moonlight.position.set(-18, 35, -18); moonlight.castShadow = true;
-moonlight.shadow.mapSize.set(2048, 2048);
-Object.assign(moonlight.shadow.camera, { left: -40, right: 40, top: 40, bottom: -40, near: 1, far: 100 });
-moonlight.shadow.bias = -0.001;
-scene.add(moonlight);
-const warmFill = new THREE.DirectionalLight('#f9bc80', 0.65); warmFill.position.set(25, 12, 15); scene.add(warmFill);
-
-const mat = (color, roughness = 0.9, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness, ...extra });
-const materials = {
-  ground: mat('#416557'), cliff: mat('#253e3f'), path: mat('#6e8670'), wood: mat('#604e43'),
-  leaf: mat('#487d68'), leafLight: mat('#699982'), stone: mat('#637c6f'), hat: mat('#e6c794'),
-  skin: mat('#edc29a'), cloth: mat('#638b9d'), dark: mat('#243d4a'), lamp: mat('#ffce7c', .5, { emissive: '#ffae42', emissiveIntensity: 1.5 })
-};
-function mesh(geometry, material, parent, position = [0, 0, 0], scale) {
-  const m = new THREE.Mesh(geometry, material); m.position.fromArray(position);
-  if (scale) m.scale.fromArray(scale);
-  m.castShadow = true; m.receiveShadow = true; parent.add(m); return m;
-}
-const sphere = new THREE.SphereGeometry(1, 12, 8);
-const cylinder = (r1, r2, h, n = 10) => new THREE.CylinderGeometry(r1, r2, h, n);
-const island = new THREE.Group(); scene.add(island);
-mesh(cylinder(34, 29, 5.5, 80), materials.cliff, island, [0, -2.8, 0]);
-mesh(cylinder(34.1, 34, 0.25, 80), materials.ground, island, [0, -0.1, 0]);
-mesh(new THREE.DodecahedronGeometry(22, 0), materials.cliff, island, [0, -14, 0], [1.1, .5, 1.08]);
-const pathRing = mesh(new THREE.TorusGeometry(18, .46, 5, 100), materials.path, island, [0, -.28, 0]); pathRing.rotation.x = Math.PI / 2;
-for (let i = 0; i < 5; i++) {
-  const angle = i * Math.PI * 2 / 5;
-  const m = mesh(new THREE.BoxGeometry(1.25, .02, 18), materials.path, island, [Math.sin(angle) * 9, .03, Math.cos(angle) * 9]); m.rotation.y = angle;
-}
-// Deterministic decoration, independent from simulation RNG and headless output.
-let decoSeed = 918;
-const rand = () => { decoSeed = (Math.imul(decoSeed, 1664525) + 1013904223) >>> 0; return decoSeed / 4294967296; };
-const grass = new THREE.InstancedMesh(new THREE.ConeGeometry(.11, .48, 3), mat('#769978'), 380);
-const dummy = new THREE.Object3D();
-for (let i = 0; i < 380; i++) {
-  const a = rand() * Math.PI * 2, r = 4 + Math.sqrt(rand()) * 28;
-  dummy.position.set(Math.cos(a) * r, .2, Math.sin(a) * r);
-  dummy.scale.setScalar(.7 + rand() * .8); dummy.rotation.y = rand() * Math.PI; dummy.updateMatrix(); grass.setMatrixAt(i, dummy.matrix);
-}
-island.add(grass);
-for (let i = 0; i < 16; i++) {
-  const a = i * Math.PI * 2 / 16 + .12, r = 27 + rand() * 4;
-  const tree = new THREE.Group(); tree.position.set(Math.sin(a) * r, 0, Math.cos(a) * r);
-  mesh(cylinder(.19, .36, 2.7, 7), materials.wood, tree, [0, 1.2, 0]);
-  mesh(new THREE.IcosahedronGeometry(1.7, 1), i % 3 ? materials.leaf : materials.leafLight, tree, [0, 3.3, 0], [1, 1.2, 1]);
-  mesh(new THREE.IcosahedronGeometry(1.1, 0), materials.leaf, tree, [.9, 2.6, .3]);
-  tree.scale.setScalar(.8 + rand() * .4); island.add(tree);
-}
-for (let i = 0; i < 35; i++) {
-  const a = rand() * Math.PI * 2, r = 30 + rand() * 4;
-  mesh(new THREE.DodecahedronGeometry(.5 + rand() * .8), materials.stone, island, [Math.sin(a) * r, .15, Math.cos(a) * r], [1.4, .6, 1]);
-}
-// Small keeper's shelter: original procedural geometry.
-const shelter = new THREE.Group(); shelter.position.set(-12, 0, 9); shelter.rotation.y = -.5;
-mesh(new THREE.BoxGeometry(3.3, 2.6, 2.5), mat('#49615d'), shelter, [0, 1.3, 0]);
-const roof = mesh(new THREE.ConeGeometry(3.1, 1.7, 4), materials.wood, shelter, [0, 3.2, 0], [1, .8, .85]); roof.rotation.y = Math.PI / 4;
-mesh(new THREE.BoxGeometry(.75, 1.6, .05), materials.dark, shelter, [0, .8, 1.27]);
-mesh(new THREE.BoxGeometry(.55, .65, .06), materials.lamp, shelter, [-1, 1.6, 1.28]);
-island.add(shelter);
-
-const cloudMat = new THREE.MeshStandardMaterial({ color: '#577984', roughness: 1, transparent: true, opacity: .45, depthWrite: false });
-const clouds = new THREE.Group(); scene.add(clouds);
-for (let i = 0; i < 55; i++) {
-  const a = rand() * Math.PI * 2, r = 40 + rand() * 65;
-  mesh(sphere, cloudMat, clouds, [Math.sin(a) * r, -6 - rand() * 7, Math.cos(a) * r], [6 + rand() * 10, 1.3 + rand() * 2, 5 + rand() * 9]);
-}
-const starsGeo = new THREE.BufferGeometry();
-const starsPos = [];
-for (let i = 0; i < 350; i++) starsPos.push((rand() - .5) * 240, 30 + rand() * 65, (rand() - .5) * 240);
-starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starsPos, 3));
-scene.add(new THREE.Points(starsGeo, new THREE.PointsMaterial({ color: '#d6e9da', size: .12, transparent: true, opacity: .65 })));
-mesh(sphere, new THREE.MeshBasicMaterial({ color: '#dce4c5' }), scene, [-48, 48, -75], [3, 3, 3]);
-
-const glowCanvas = document.createElement('canvas'); glowCanvas.width = glowCanvas.height = 64;
-const glowCtx = glowCanvas.getContext('2d');
-const gradient = glowCtx.createRadialGradient(32, 32, 0, 32, 32, 32);
-gradient.addColorStop(0, '#ffffffff'); gradient.addColorStop(.13, '#ffffffdd'); gradient.addColorStop(.4, '#ffffff44'); gradient.addColorStop(1, '#ffffff00');
-glowCtx.fillStyle = gradient; glowCtx.fillRect(0, 0, 64, 64);
-const glowTexture = new THREE.CanvasTexture(glowCanvas);
-function glow(parent, color, size, position = [0, 0, 0]) {
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: glowTexture, color, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-  sprite.position.fromArray(position); sprite.scale.set(size, size, 1); parent.add(sprite); return sprite;
-}
-
-const playerModel = new THREE.Group(); scene.add(playerModel);
-mesh(cylinder(.25, .35, .65), materials.cloth, playerModel, [0, .85, 0]);
-mesh(sphere, materials.skin, playerModel, [0, 1.35, 0], [.25, .27, .24]);
-mesh(new THREE.ConeGeometry(.66, .36, 32), materials.hat, playerModel, [0, 1.65, 0]);
-mesh(cylinder(.65, .65, .025, 32), materials.hat, playerModel, [0, 1.47, 0]);
-mesh(new THREE.BoxGeometry(.12, .045, .02), materials.dark, playerModel, [0, 1.34, -.24]);
-const legs = [-.15, .15].map(x => mesh(new THREE.CapsuleGeometry(.105, .3, 3, 6), materials.dark, playerModel, [x, .32, 0]));
-mesh(cylinder(.025, .025, .5, 5), materials.wood, playerModel, [.6, 1.2, 0]);
-mesh(sphere, materials.lamp, playerModel, [.6, .88, 0], [.15, .22, .15]);
-glow(playerModel, '#ffb24c', 1.5, [.6, .9, 0]);
-const playerLight = new THREE.PointLight('#ffb95c', 5, 8, 2); playerLight.position.set(.5, 1.1, 0); playerModel.add(playerLight);
-
-const lanternModels = new Map(), moteModels = new Map(), shadeModels = new Map();
-function makeLantern(l) {
-  const group = new THREE.Group(); group.position.fromArray(l.pos); scene.add(group);
-  mesh(cylinder(.8, 1, .3), materials.stone, group, [0, .15, 0]);
-  mesh(cylinder(.12, .18, 2.8, 8), materials.wood, group, [0, 1.6, 0]);
-  const lampMat = mat('#ab9171', .7, { emissive: '#ffad46', emissiveIntensity: .06 });
-  mesh(new THREE.SphereGeometry(.58, 12, 10), lampMat, group, [0, 3.1, 0], [.85, 1.15, .85]);
-  mesh(new THREE.ConeGeometry(.88, .36, 8), materials.wood, group, [0, 3.8, 0]);
-  mesh(cylinder(.22, .22, .1), materials.wood, group, [0, 2.43, 0]);
-  for (let i = 0; i < 4; i++) {
-    const a = i * Math.PI / 2;
-    mesh(new THREE.BoxGeometry(.035, 1.1, .035), materials.wood, group, [Math.sin(a) * .44, 3.1, Math.cos(a) * .44]);
+import {Game,DT,world,groundHeight} from './simulation.mjs';
+import {tuning} from './config.mjs';
+const $=id=>document.getElementById(id), fuelRules=Boolean(tuning.fuel_max);
+const defaults={volume:25,sensitivity:.35,colorblind:false,reduceMotion:false,largeText:false};
+let settings;try{settings={...defaults,...JSON.parse(localStorage.getItem('dao-settings')??'{}')};}catch{settings={...defaults};}
+let renderer;try{renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:'high-performance'});}catch(e){$('loading').classList.add('hidden');$('error').classList.remove('hidden');$('error').textContent='Cần bật WebGL / tăng tốc đồ họa trong trình duyệt. Headless vẫn chạy bằng Node.js.';throw e;}
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.45;$('scene').append(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color('#0E1430');scene.fog=new THREE.FogExp2('#1B2350',.005);
+const camera=new THREE.PerspectiveCamera(50,innerWidth/innerHeight,.1,260);camera.position.set(42,39,50);
+const ambient=new THREE.HemisphereLight('#d5e4ee','#12384A',.15);scene.add(ambient);
+const moon=new THREE.DirectionalLight('#b8d6e9',1.4);moon.position.set(-20,45,-20);moon.castShadow=true;moon.shadow.mapSize.set(1024,1024);Object.assign(moon.shadow.camera,{left:-65,right:115,top:65,bottom:-65,near:1,far:150});moon.shadow.bias=-.001;scene.add(moon);
+const material=(color,extra={})=>new THREE.MeshStandardMaterial({color,roughness:.9,...extra});
+const M={grass:material('#2F5D50'),sand:material('#C9B48A'),wood:material('#6B4A2F'),cloud:material('#12384A'),cliff:material('#233b48'),leaf:material('#437963'),stone:material('#63756c'),shirt:material('#E8E2D0'),red:material('#C8102E'),hat:material('#C9B48A'),skin:material('#e3bb98'),lamp:material('#FFE9B0',{emissive:'#FFB347',emissiveIntensity:1.4})};
+const sphere=new THREE.SphereGeometry(1,10,8),dummy=new THREE.Object3D();
+function mesh(geo,mat,parent,pos=[0,0,0],scale){const m=new THREE.Mesh(geo,mat);m.position.fromArray(pos);if(scale)m.scale.fromArray(scale);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
+const cyl=(a,b,h,n=16)=>new THREE.CylinderGeometry(a,b,h,n);
+const glowCanvas=document.createElement('canvas');glowCanvas.width=glowCanvas.height=64;const gc=glowCanvas.getContext('2d'),grad=gc.createRadialGradient(32,32,0,32,32,32);grad.addColorStop(0,'#ffffffff');grad.addColorStop(.15,'#ffffffbb');grad.addColorStop(.4,'#ffffff33');grad.addColorStop(1,'#ffffff00');gc.fillStyle=grad;gc.fillRect(0,0,64,64);const glowTexture=new THREE.CanvasTexture(glowCanvas);
+function glow(parent,color,size,pos){const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTexture,color,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));s.position.fromArray(pos);s.scale.set(size,size,1);parent.add(s);return s;}
+const playerModel=new THREE.Group();scene.add(playerModel);mesh(cyl(.26,.36,.65),M.shirt,playerModel,[0,.85,0]);mesh(sphere,M.skin,playerModel,[0,1.35,0],[.25,.27,.24]);mesh(new THREE.ConeGeometry(.65,.36,28),M.hat,playerModel,[0,1.65,0]);mesh(cyl(.65,.65,.025,28),M.hat,playerModel,[0,1.47,0]);mesh(new THREE.BoxGeometry(.5,.13,.12),M.red,playerModel,[0,1.12,.18]);
+const legs=[-.15,.15].map(x=>mesh(new THREE.CapsuleGeometry(.1,.3,3,6),M.wood,playerModel,[x,.32,0]));mesh(cyl(.022,.022,.52,6),M.wood,playerModel,[.6,1.2,0]);mesh(sphere,M.lamp,playerModel,[.6,.85,0],[.14,.21,.14]);glow(playerModel,'#FFB347',1.1,[.6,.85,0]);const playerLight=new THREE.PointLight('#FFB347',6,9,2);playerLight.position.set(.5,1,0);playerModel.add(playerLight);
+const shadeMaterial=material('#120A1A',{emissive:'#7A3CFF',emissiveIntensity:.12});
+const shadeBodies=new THREE.InstancedMesh(sphere,shadeMaterial,512),shadeSkirts=new THREE.InstancedMesh(new THREE.ConeGeometry(.5,1,8),shadeMaterial,512),shadeEyes=new THREE.InstancedMesh(sphere,new THREE.MeshBasicMaterial({color:'#7A3CFF'}),1024);shadeBodies.castShadow=true;scene.add(shadeBodies,shadeSkirts,shadeEyes);
+const moteGeometry=new THREE.BufferGeometry(),motePositions=new Float32Array(500*3);moteGeometry.setAttribute('position',new THREE.BufferAttribute(motePositions,3));const motePoints=new THREE.Points(moteGeometry,new THREE.PointsMaterial({map:glowTexture,color:'#FFF6C2',size:1.1,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(motePoints);
+const pulseRing=mesh(new THREE.RingGeometry(.9,1,64),new THREE.MeshBasicMaterial({color:'#FFE9B0',transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}),scene);pulseRing.rotation.x=-Math.PI/2;
+let scenery,lanternModels=[],charmModels=[],drifterModels=[];
+function cleanGroup(group){if(!group)return;scene.remove(group);group.traverse(o=>{if(o.geometry&&o.geometry!==sphere)o.geometry.dispose();if(o.isSprite)o.material.dispose();});}
+function buildWorld(night){
+  cleanGroup(scenery);scenery=new THREE.Group();scene.add(scenery);lanternModels=[];charmModels=[];drifterModels=[];const w=world(night);
+  for(const c of w.centers){mesh(cyl(w.radius,w.radius-3,5,72),M.cliff,scenery,[c[0],-2.6,c[2]]);mesh(cyl(w.radius,w.radius,.2,72),M.grass,scenery,[c[0],-.1,c[2]]);const ring=mesh(new THREE.TorusGeometry(w.radius*.65,.22,4,80),M.sand,scenery,[c[0],-.15,c[2]]);ring.rotation.x=Math.PI/2;
+    for(let i=0;i<12;i++){const a=i*Math.PI/6+.17,r=w.radius-4,x=c[0]+Math.sin(a)*r,z=c[2]+Math.cos(a)*r;mesh(cyl(.17,.3,2.5,7),M.wood,scenery,[x,1.2,z]);mesh(new THREE.IcosahedronGeometry(1.8,1),M.leaf,scenery,[x,3,z],[1,1.3,1]);}
+    for(let i=0;i<14;i++){const a=i*2.4,x=c[0]+Math.cos(a)*(w.radius+10),z=c[2]+Math.sin(a)*(w.radius+10);mesh(sphere,M.cloud,scenery,[x,-7-(i%3),z],[8,2,6]);}
   }
-  const halo = glow(group, '#ffc365', 5, [0, 3.1, 0]); halo.material.opacity = .06;
-  const light = new THREE.PointLight('#ffba5f', 0, 15, 2); light.position.set(0, 3, 0); group.add(light);
-  const safe = mesh(new THREE.RingGeometry(tuning.safe_radius - .04, tuning.safe_radius, 64), new THREE.MeshBasicMaterial({ color: '#ffcf86', transparent: true, opacity: .14, side: THREE.DoubleSide, depthWrite: false }), group, [0, .045, 0]); safe.rotation.x = -Math.PI / 2; safe.visible = false;
-  const beacon = mesh(cylinder(.05, .05, 15, 8), new THREE.MeshBasicMaterial({ color: '#b7dfd0', transparent: true, opacity: .13, depthWrite: false }), group, [0, 10.7, 0]);
-  return { group, lampMat, halo, light, safe, beacon };
-}
-function makeShade(sh) {
-  const group = new THREE.Group(); scene.add(group);
-  const body = mat('#242139', .8, { emissive: '#24132b', emissiveIntensity: .4 });
-  mesh(sphere, body, group, [0, .85, 0], [.68, .85, .64]);
-  mesh(new THREE.ConeGeometry(.5, 1.1, 8), body, group, [0, .25, 0]);
-  const eyes = new THREE.MeshBasicMaterial({ color: '#e4b6ed' });
-  mesh(sphere, eyes, group, [-.22, 1.05, -.55], [.08, .1, .045]); mesh(sphere, eyes, group, [.22, 1.05, -.55], [.08, .1, .045]);
-  const aura = glow(group, '#9259b0', 2.5, [0, .6, 0]); aura.material.opacity = .4;
-  return { group, body, aura };
-}
-const pulseRing = mesh(new THREE.RingGeometry(.92, 1, 80), new THREE.MeshBasicMaterial({ color: '#ffe4a2', transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false }), scene);
-pulseRing.rotation.x = -Math.PI / 2;
-
-let game = new Game(tuning, 12), mode = 'intro', previousMode = 'playing';
-let yaw = 0, accumulator = 0, last = performance.now(), pulseTime = -10, toastUntil = 0;
-let audio, soundOn = false, drag = null, performanceFrames = 0, fps = 0;
-const keys = new Set();
-function chime(freq = 660, duration = .18, volume = .035) {
-  if (!soundOn) return;
-  audio ??= new AudioContext();
-  const osc = audio.createOscillator(), gain = audio.createGain();
-  osc.type = 'sine'; osc.frequency.setValueAtTime(freq, audio.currentTime);
-  gain.gain.setValueAtTime(volume, audio.currentTime); gain.gain.exponentialRampToValueAtTime(.001, audio.currentTime + duration);
-  osc.connect(gain); gain.connect(audio.destination); osc.start(); osc.stop(audio.currentTime + duration);
-}
-function toast(text) { $('toast').textContent = text; $('toast').classList.add('show'); toastUntil = performance.now() + 2500; }
-function setPlayUI(playing) {
-  document.body.classList.toggle('playing', playing);
-  for (const id of ['objective', 'mapbox', 'play-controls']) $(id).classList.toggle('hidden', !playing);
-  $('intro').classList.toggle('hidden', playing);
-}
-function begin() {
-  keys.clear(); game = new Game(tuning, 12); yaw = 0; accumulator = 0; mode = 'playing'; pulseTime = -10;
-  $('dialog').classList.add('hidden'); setPlayUI(true); $('game').focus();
-  toast('Đến gần đom đóm để gom ánh sáng.'); updateHUD();
-}
-function showDialog(help = false, terminal = false) {
-  if (mode === 'paused') return;
-  previousMode = mode; mode = 'paused'; keys.clear();
-  $('dialog').classList.remove('hidden'); $('help-text').classList.toggle('hidden', !help);
-  $('resume').classList.toggle('hidden', terminal);
-  $('dialog-label').textContent = terminal ? 'HÀNH TRÌNH ĐÊM 01' : help ? 'BỎ TÚI MỘT CHÚT ÁNH SÁNG' : 'MỘT KHOẢNG LẶNG';
-  $('dialog-title').textContent = terminal ? (game.state === 'won' ? 'Đảo Bến đã sáng rồi.' : 'Hẹn Mây một đêm khác.') : help ? 'Làm người giữ đèn.' : 'Đêm vẫn đang chờ.';
-  $('dialog-text').textContent = terminal ? (game.state === 'won' ? 'Năm ngọn đèn đã thức giấc. ' : game.player.flames === 0 ? 'Ngọn lửa cuối cùng đã tắt. ' : 'Bình minh đã đến trước khi thắp đủ đèn. ') + 'Điểm hành trình: ' + game.score + '.' : help ? 'Gom ánh sáng. Tránh sương đen. Tìm về những ngọn đèn.' : 'Nghỉ một chút. Ánh sáng vẫn ở đây.';
-  $('restart').textContent = terminal ? 'Chơi lại đêm 1' : 'Bắt đầu lại';
-  (terminal ? $('restart') : $('resume')).focus();
-}
-function resume() { if (game.state !== 'playing') return; mode = previousMode; $('dialog').classList.add('hidden'); accumulator = 0; keys.clear(); $('game').focus(); }
-$('start').onclick = begin; $('restart').onclick = begin; $('resume').onclick = resume;
-$('help').onclick = () => showDialog(true);
-$('pause').onclick = () => mode === 'paused' ? resume() : showDialog();
-$('sound').onclick = async () => {
-  soundOn = !soundOn;
-  if (soundOn) { audio ??= new AudioContext(); await audio.resume(); chime(); }
-  $('sound').textContent = 'Âm thanh: ' + (soundOn ? 'bật' : 'tắt');
-  $('sound').setAttribute('aria-label', soundOn ? 'Tắt âm thanh' : 'Bật âm thanh');
-};
-document.addEventListener('keydown', e => {
-  if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) e.preventDefault();
-  if (e.code === 'KeyP' || e.code === 'Escape') { if (!e.repeat) mode === 'paused' ? resume() : showDialog(); return; }
-  if (e.code === 'KeyH' && !e.repeat) { showDialog(true); return; }
-  if (mode === 'playing') keys.add(e.code);
-});
-document.addEventListener('keyup', e => keys.delete(e.code));
-window.addEventListener('blur', () => { keys.clear(); if (mode === 'playing') showDialog(); });
-document.addEventListener('visibilitychange', () => { if (document.hidden && mode === 'playing') showDialog(); });
-renderer.domElement.addEventListener('pointerdown', e => { if (mode === 'playing') { drag = e.clientX; renderer.domElement.setPointerCapture(e.pointerId); } });
-renderer.domElement.addEventListener('pointermove', e => { if (drag !== null) { yaw -= (e.clientX - drag) * .35; drag = e.clientX; } });
-renderer.domElement.addEventListener('pointerup', () => drag = null);
-
-function updateHUD() {
-  const lit = game.lanterns.filter(l => l.lit).length;
-  $('flames').textContent = Array.from({ length: tuning.flames }, (_, i) => i < game.player.flames ? '◆' : '◇').join(' ');
-  $('flames').setAttribute('aria-label', game.player.flames + ' ngọn lửa còn lại');
-  $('carried').textContent = game.player.carried;
-  const seconds = Math.ceil(game.timeLeft);
-  $('timer').textContent = String(Math.floor(seconds / 60)).padStart(2, '0') + ':' + String(seconds % 60).padStart(2, '0');
-  $('score').textContent = String(game.score).padStart(4, '0');
-  $('litcount').textContent = lit + ' / 5 ĐÈN';
-  $('lantern-progress').replaceChildren(...game.lanterns.map(l => { const el = document.createElement('span'); el.className = l.lit ? 'lit' : ''; el.title = l.id + (l.lit ? ': đã thắp' : ': ' + l.deposited + '/6'); return el; }));
-  const near = game.lanterns.find(l => !l.lit && Math.hypot(l.pos[0] - game.player.pos[0], l.pos[2] - game.player.pos[2]) <= tuning.interact_radius);
-  $('interaction').classList.toggle('hidden', !near || mode !== 'playing');
-  if (near) $('interaction').querySelector('span').textContent = game.player.carried ? `Nạp ánh sáng · ${near.id} (${near.deposited}/6)` : 'Cần đom đóm để thắp đèn';
-}
-function processEvents(events, time) {
-  for (const e of events) {
-    if (e.name === 'mote_picked') { chime(620 + (e.data.carried % 5) * 85, .13, .025); if (e.data.carried === tuning.carry_capacity) toast('Túi đã đầy. Mang ánh sáng về một ngọn đèn nhé.'); }
-    if (e.name === 'lantern_lit') { toast('Một ngọn đèn thức giấc. Nơi này đã an toàn.'); chime(880, .8, .07); }
-    if (e.name === 'deposit' && !game.lanterns.find(l => l.id === e.data.lantern_id).lit) toast('Đã nạp ' + e.data.amount + ' đom đóm. Gom thêm để thắp đèn.');
-    if (e.name === 'pulse') { pulseTime = time; pulseRing.position.set(game.player.pos[0], .12, game.player.pos[2]); chime(220, .4, .06); }
-    if (e.name === 'player_hit') { toast('Bóng Mực đến gần! Tìm vùng sáng để trú ẩn.'); document.body.classList.remove('hit-flash'); void document.body.offsetWidth; document.body.classList.add('hit-flash'); chime(130, .5, .045); }
-    if (e.name === 'game_over') showDialog(false, true);
+  if(night===2)mesh(new THREE.BoxGeometry(18,.15,4),M.wood,scenery,[35,-.075,0]);
+  if(night===3){const ring=mesh(new THREE.RingGeometry(12,24,64,1,0,Math.PI),material('#2F5D50',{side:THREE.DoubleSide}),scenery,[0,3,0]);ring.rotation.x=Math.PI/2;
+    for(const r of [12,24])mesh(new THREE.CylinderGeometry(r,r,3,64,1,true,-Math.PI/2,Math.PI),M.cliff,scenery,[0,1.5,0]);
+    mesh(cyl(8,8,6,48),M.cliff,scenery,[0,3,0]);mesh(cyl(8,8,.15,48),M.grass,scenery,[0,6,0]);
+    for(const a of [Math.PI/6,5*Math.PI/6]){const ramp=mesh(new THREE.BoxGeometry(3,.12,Math.sqrt(45)),M.sand,scenery,[Math.cos(a)*27,1.5,Math.sin(a)*27]);ramp.rotation.set(Math.atan(.5),Math.PI/2-a,0);}
+    mesh(cyl(2,2,8,16),M.wood,scenery,[0,10,0]);mesh(new THREE.ConeGeometry(3,1.5,8),M.wood,scenery,[0,14.7,0]);
   }
+  for(const pad of w.pads){const m=mesh(cyl(1,1,.12,24),M.red,scenery,[pad.pos[0],pad.pos[1]+.06,pad.pos[2]]);glow(scenery,'#F2C14E',2,[pad.pos[0],pad.pos[1]+.2,pad.pos[2]]);}
+  for(const l of game.lanterns){const group=new THREE.Group();group.position.fromArray(l.pos);scenery.add(group);mesh(cyl(.65,.8,.3),M.stone,group,[0,.15,0]);mesh(cyl(.12,.16,2.7,8),M.wood,group,[0,1.5,0]);const paper=material('#5B5F6E',{emissive:'#FFB347',emissiveIntensity:0});const bulb=mesh(sphere,paper,group,[0,3,0],[.47,.64,.47]);mesh(new THREE.ConeGeometry(.8,.35,8),M.wood,group,[0,3.7,0]);const torn=mesh(new THREE.PlaneGeometry(.12,.4),new THREE.MeshBasicMaterial({color:'#120A1A',side:THREE.DoubleSide}),group,[.2,3,.44]);torn.rotation.z=.3;const halo=glow(group,'#FFB347',4,[0,3,0]);const light=new THREE.PointLight('#FFB347',0,17,2);light.position.set(0,3,0);group.add(light);const safe=mesh(new THREE.RingGeometry(5.95,6,64),new THREE.MeshBasicMaterial({color:'#F2C14E',transparent:true,opacity:.2,side:THREE.DoubleSide,depthWrite:false}),group,[0,.04,0]);safe.rotation.x=-Math.PI/2;
+    const fuelBack=mesh(new THREE.PlaneGeometry(1.5,.13),new THREE.MeshBasicMaterial({color:'#1B2350',side:THREE.DoubleSide}),group,[0,4.2,0]);const fuelBar=mesh(new THREE.PlaneGeometry(1.45,.09),new THREE.MeshBasicMaterial({color:'#F2C14E',side:THREE.DoubleSide}),group,[0,4.2,.01]);lanternModels.push({group,bulb,paper,torn,halo,light,safe,fuelBack,fuelBar});
+  }
+  for(const c of game.charms){const g=new THREE.Group();g.position.fromArray(c.pos);scenery.add(g);mesh(new THREE.BoxGeometry(.35,.6,.07),M.red,g,[0,.8,0]);mesh(new THREE.BoxGeometry(.42,.67,.03),material('#F2C14E'),g,[0,.8,-.03]);glow(g,'#F2C14E',1.5,[0,.8,0]);charmModels.push(g);}
 }
-function syncModels(time) {
-  const p = game.player.pos;
-  playerModel.position.fromArray(p);
-  const moving = Math.hypot(...game.input.move) > 0 && mode === 'playing';
-  legs.forEach((leg, i) => leg.rotation.x = moving ? Math.sin(time * 12 + i * Math.PI) * .5 : 0);
-  if (moving) {
-    const a = yaw * Math.PI / 180;
-    const dx = game.input.move[0] * Math.cos(a) + game.input.move[1] * Math.sin(a);
-    const dz = -game.input.move[0] * Math.sin(a) + game.input.move[1] * Math.cos(a);
-    playerModel.rotation.y = Math.atan2(-dx, -dz);
-  }
-  playerModel.visible = !(game.tick < game.invulnUntil && Math.floor(time * 12) % 2);
-  for (const l of game.lanterns) {
-    if (!lanternModels.has(l.id)) lanternModels.set(l.id, makeLantern(l));
-    const model = lanternModels.get(l.id); model.group.position.fromArray(l.pos);
-    model.lampMat.emissiveIntensity = l.lit ? 2 : .05 + l.deposited / 6 * .6;
-    model.halo.material.opacity = l.lit ? .65 + Math.sin(time * 2) * .04 : .06;
-    model.light.intensity = l.lit ? 23 : 0; model.safe.visible = l.lit; model.beacon.visible = !l.lit;
-  }
-  const currentMotes = new Set(game.motes.map(m => m.id));
-  for (const [id, model] of moteModels) if (!currentMotes.has(id)) { scene.remove(model); model.material.dispose(); moteModels.delete(id); }
-  for (const m of game.motes) {
-    if (!moteModels.has(m.id)) moteModels.set(m.id, glow(scene, '#f8e79b', .95));
-    const sprite = moteModels.get(m.id);
-    const phase = Number(m.id.slice(1)) * 1.71;
-    sprite.position.set(m.pos[0] + Math.sin(time * 1.8 + phase) * .15, .55 + Math.sin(time * 2.4 + phase) * .2, m.pos[2]);
-    sprite.material.opacity = .6 + Math.sin(time * 3 + phase) * .3;
-  }
-  const currentShades = new Set(game.shades.map(s => s.id));
-  for (const [id, model] of shadeModels) if (!currentShades.has(id)) { scene.remove(model.group); model.body.dispose(); model.aura.material.dispose(); shadeModels.delete(id); }
-  for (const sh of game.shades) {
-    if (!shadeModels.has(sh.id)) shadeModels.set(sh.id, makeShade(sh));
-    const model = shadeModels.get(sh.id);
-    model.group.position.set(sh.pos[0], sh.pos[1] + Math.sin(time * 3) * .12, sh.pos[2]);
-    model.group.rotation.y = Math.atan2(sh.pos[0] - p[0], sh.pos[2] - p[2]);
-    model.body.color.set(sh.state === 'stunned' ? '#665a84' : '#242139');
-    model.aura.material.color.set(sh.state === 'stunned' ? '#ffd484' : '#9259b0');
-  }
-  const pulseAge = time - pulseTime;
-  pulseRing.visible = pulseAge < .65;
-  if (pulseRing.visible) { pulseRing.scale.setScalar(.5 + pulseAge / .65 * tuning.pulse_radius); pulseRing.material.opacity = (1 - pulseAge / .65) * .7; }
-  const lit = game.lanterns.filter(l => l.lit).length;
-  ambient.intensity = 2.1 + lit * .12;
-  clouds.rotation.y = time * .001;
+let game=new Game(tuning,12),mode='menu',previousMode='playing',night=1,totalScore=0,nightsWon=0,seed=12,yaw=0,accumulator=0,last=performance.now(),toastEnd=0,pulseTime=-100,lastSecond=-1,lastHUD=0;
+const keys=new Set();let drag=null,audio,nextMelody=0,melodyStep=0;
+const defaultBindings={forward:'KeyW',back:'KeyS',left:'KeyA',right:'KeyD',jump:'Space',dash:'ShiftLeft',interact:'KeyE',pulse:'KeyF',pause:'KeyP'};
+let bindings={...defaultBindings};
+function active(action){return keys.has(bindings[action])||(action==='forward'&&keys.has('ArrowUp'))||(action==='back'&&keys.has('ArrowDown'))||(action==='left'&&keys.has('ArrowLeft'))||(action==='right'&&keys.has('ArrowRight'));}
+function sound(freq=660,duration=.15,volume=.04){if(!audio||settings.volume===0)return;const o=audio.createOscillator(),g=audio.createGain();o.type='sine';o.frequency.value=freq;g.gain.setValueAtTime(volume*settings.volume/100,audio.currentTime);g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+duration);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+duration);}
+function activateAudio(){audio??=new AudioContext();audio.resume();}
+function toast(text){$('toast').textContent=text;$('toast').classList.add('show');toastEnd=performance.now()+2800;}
+function visibility(){const playing=mode!=='menu';$('intro').classList.toggle('hidden',playing);$('hud').classList.toggle('hidden',!playing);$('clock').classList.toggle('hidden',!playing);document.body.classList.toggle('playing',playing);}
+function newNight(n){night=n;game=new Game(tuning,seed+n-1,{},night);buildWorld(night);yaw=0;accumulator=0;keys.clear();lastSecond=-1;$('dialog').classList.remove('hidden');$('resume').classList.remove('hidden');$('next').classList.add('hidden');$('save-score').classList.add('hidden');$('dialog-label').textContent='ĐÊM '+night+' · '+world(night).name.toUpperCase();$('dialog-title').textContent=['','Một đốm sáng đầu tiên.','Qua cầu tre, theo gió.','Đêm trên đỉnh chuông.'][night];$('dialog-text').textContent='Ông Đăng: “'+(fuelRules?'Đèn có thể tắt, nhưng lòng can đảm thì không. Giữ đảo sáng tới bình minh nhé, Mây.”':'Mỗi ngọn đèn được thắp là một con đường về nhà. Gom đom đóm và tìm ánh sáng nhé, Mây.”');$('resume').textContent='Bước vào đêm';previousMode='playing';mode='intro';visibility();updateHUD();}
+function start(){activateAudio();totalScore=0;nightsWon=0;newNight(Number($('night-select').value));}
+function pause(help=false){if(mode!=='playing')return;previousMode=mode;mode='paused';keys.clear();$('dialog').classList.remove('hidden');$('resume').classList.remove('hidden');$('resume').textContent='Tiếp tục';$('next').classList.add('hidden');$('save-score').classList.add('hidden');$('dialog-label').textContent=help?'LÀM NGƯỜI GIỮ ĐÈN':'MỘT KHOẢNG LẶNG';$('dialog-title').textContent=help?'Một chút ánh sáng bỏ túi.':'Đêm vẫn đang chờ.';$('dialog-text').textContent=help?'WASD: di chuyển. Space: nhảy. Shift: lướt. E: nạp đèn. F: tỏa sáng (3 đom đóm). Q/C hoặc kéo chuột: xoay camera. Đèn sáng là nơi trú ẩn. '+(fuelRules?'Châm dầu khi đèn yếu; giữ đủ đèn sáng tới bình minh.':'Thắp hết đèn trước bình minh để thắng.'):'Nghỉ một chút. Ánh sáng vẫn ở đây.';}
+function resume(){if(game.state!=='playing')return;mode='playing';$('dialog').classList.add('hidden');keys.clear();accumulator=0;$('game').focus();}
+function finish(){keys.clear();mode='result';$('dialog').classList.remove('hidden');$('resume').classList.add('hidden');const won=game.state==='won';if(won){totalScore+=game.score;nightsWon++;}$('next').classList.toggle('hidden',!won||night===3);$('dialog-label').textContent=won&&night===3?'BÌNH MINH':'HÀNH TRÌNH ĐÊM '+night;$('dialog-title').textContent=won?(night===3?'Bình minh đã trở lại.':'Đảo đã sáng rồi, Mây ơi.'):'Hẹn Mây một đêm khác.';$('dialog-text').textContent=`${won?'Giữ lại một chút can đảm cho hành trình phía trước.':'Bóng tối chỉ là một phần của hành trình.'} Điểm đêm: ${game.score}. Tổng điểm các đêm đã thắng: ${totalScore}.`;$('save-score').classList.add('hidden');sound(won?880:145,.8,.12);}
+$('start').onclick=start;$('resume').onclick=resume;$('restart').onclick=()=>newNight(night);$('next').onclick=()=>newNight(night+1);$('menu').onclick=()=>{mode='menu';keys.clear();$('dialog').classList.add('hidden');visibility();};$('pause').onclick=()=>mode==='paused'?resume():pause();$('help').onclick=()=>pause(true);
+function openSettings(){if(mode==='playing')pause();$('settings').classList.remove('hidden');$('volume').value=settings.volume;$('sensitivity').value=settings.sensitivity;$('colorblind').checked=settings.colorblind;$('reduce-motion').checked=settings.reduceMotion;$('large-text').checked=settings.largeText;}
+function applySettings(){document.documentElement.style.setProperty('--warning',settings.colorblind?'#FFFFFF':'#FF5A5F');document.documentElement.style.setProperty('--font-scale',settings.largeText?'1.25':'1');document.body.classList.toggle('reduced-motion',settings.reduceMotion);shadeEyes.material.color.set(settings.colorblind?'#00B3FF':'#7A3CFF');shadeMaterial.emissive.set(settings.colorblind?'#00B3FF':'#7A3CFF');}
+$('settings-open').onclick=openSettings;$('dialog-settings').onclick=openSettings;$('settings-close').onclick=()=>{settings={...settings,volume:Number($('volume').value),sensitivity:Number($('sensitivity').value),colorblind:$('colorblind').checked,reduceMotion:$('reduce-motion').checked,largeText:$('large-text').checked};try{localStorage.setItem('dao-settings',JSON.stringify(settings));}catch{toast('Không lưu được cài đặt trong trình duyệt này.');}applySettings();$('settings').classList.add('hidden');};applySettings();
+document.addEventListener('keydown',e=>{if(e.target.matches('input,select'))return;if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();if((e.code===bindings.pause||e.code==='Escape')&&!e.repeat){if(!$('settings').classList.contains('hidden'))$('settings-close').click();else if(mode==='paused')resume();else pause();return;}if(mode==='playing')keys.add(e.code);});
+document.addEventListener('keyup',e=>keys.delete(e.code));window.addEventListener('blur',()=>{keys.clear();pause();});document.addEventListener('visibilitychange',()=>{if(document.hidden)pause();});
+renderer.domElement.addEventListener('pointerdown',e=>{if(mode==='playing'){drag=e.clientX;renderer.domElement.setPointerCapture(e.pointerId);}});renderer.domElement.addEventListener('pointermove',e=>{if(drag!==null){yaw-=(e.clientX-drag)*settings.sensitivity;drag=e.clientX;}});renderer.domElement.addEventListener('pointerup',()=>drag=null);
+function updateHUD(){const p=game.player,lit=game.lanterns.filter(l=>l.lit).length,seconds=Math.ceil(game.timeLeft);$('nightname').textContent='ĐÊM '+night+' · '+world(night).name.toUpperCase();$('timer').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');$('timer').classList.toggle('danger',seconds<=30);$('flames').textContent=Array.from({length:3},(_,i)=>i<p.flames?'◆':'◇').join(' ');$('flames').setAttribute('aria-label',p.flames+' ngọn lửa còn lại');$('litcount').textContent=lit+' / '+game.lanterns.length+' ĐÈN';$('score').textContent=(totalScore+game.score)+' ĐIỂM';$('goal').textContent=fuelRules?'Giữ ít nhất '+Math.ceil(game.lanterns.length*.6)+' đèn sáng tới bình minh':'Thắp sáng cả hòn đảo';$('carried').textContent=p.carried+' / '+game.capacity+' ĐOM ĐÓM';
+  $('bag-cells').replaceChildren(...Array.from({length:game.capacity},(_,i)=>{const cell=document.createElement('i');cell.className=i<p.carried?'filled':'';return cell;}));$('charm-status').textContent=game.charm>0?'Bùa Gió · '+Math.ceil(game.charm/60)+'s':'';
+  $('dash-status').textContent='Shift · Lướt '+(game.dashCD>0?(game.dashCD/60).toFixed(1)+'s':'✓');$('pulse-status').textContent='F · Tỏa sáng '+(game.pulseCD>0?(game.pulseCD/60).toFixed(1)+'s':'✓');$('dash-status').classList.toggle('not-ready',game.dashCD>0);$('pulse-status').classList.toggle('not-ready',game.pulseCD>0||p.carried<3);
+  const targets=game.lanterns.filter(l=>game.receives(l)).sort((a,b)=>Math.hypot(a.pos[0]-p.pos[0],a.pos[2]-p.pos[2])-Math.hypot(b.pos[0]-p.pos[0],b.pos[2]-p.pos[2])||a.id.localeCompare(b.id));const near=targets[0];const distance=near?Math.hypot(near.pos[0]-p.pos[0],near.pos[2]-p.pos[2]):Infinity;
+  $('interaction').classList.toggle('hidden',mode!=='playing'||distance>2);if(near)$('interaction').querySelector('span').textContent=near.lit?'Châm dầu · '+Math.ceil(near.fuelUnits/60)+'/100':'Nạp ánh sáng ('+near.deposited+'/'+game.lightCost(near)+')';
+  if(near){const projected=new THREE.Vector3(...near.pos).project(camera),off=Math.abs(projected.x)>1||Math.abs(projected.y)>1||projected.z>1;$('offscreen').classList.toggle('hidden',!off||mode!=='playing');$('offscreen').textContent=(projected.x<0?'◀ ':'▶ ')+near.id+' · '+Math.round(distance)+' m';}else $('offscreen').classList.add('hidden');
+  if(seconds!==lastSecond){if(seconds<=10&&seconds>0){sound(880,.12,.1);$('warning').textContent='⚠ '+seconds+' giây trước bình minh';}lastSecond=seconds;}
 }
-const map = $('minimap').getContext('2d');
-function drawMap() {
-  const w = 180, c = 90, scale = 2;
-  map.clearRect(0, 0, w, w); map.save(); map.translate(c, c);
-  map.beginPath(); map.arc(0, 0, ISLAND_RADIUS * scale, 0, Math.PI * 2); map.fillStyle = '#32564e'; map.fill(); map.strokeStyle = '#71938266'; map.stroke();
-  for (const l of game.lanterns) {
-    map.beginPath(); map.arc(l.pos[0] * scale, l.pos[2] * scale, l.lit ? 9 : 5, 0, Math.PI * 2);
-    map.fillStyle = l.lit ? '#ffcc7c44' : '#829a87'; map.fill();
-    if (l.lit) { map.beginPath(); map.arc(l.pos[0] * scale, l.pos[2] * scale, 4, 0, Math.PI * 2); map.fillStyle = '#ffd493'; map.fill(); }
-  }
-  for (const sh of game.shades) { map.beginPath(); map.arc(sh.pos[0] * scale, sh.pos[2] * scale, 2, 0, Math.PI * 2); map.fillStyle = '#c496cf'; map.fill(); }
-  map.translate(game.player.pos[0] * scale, game.player.pos[2] * scale); map.rotate(-yaw * Math.PI / 180);
-  map.beginPath(); map.moveTo(0, -5); map.lineTo(4, 5); map.lineTo(0, 3); map.lineTo(-4, 5); map.closePath(); map.fillStyle = '#fff2c9'; map.fill(); map.restore();
+function events(list,time){for(const e of list){if(e.name==='mote_picked')sound(660+game.player.carried*35,.12,.06);if(e.name==='lantern_lit'){sound(880,.6,.15);toast('Một ngọn đèn thức giấc.');}if(e.name==='refuel'){sound(520,.2,.08);toast('Đã châm dầu.');}if(e.name==='lantern_out'){toast('⚠ '+e.data.lantern_id+' đã cạn dầu!');}if(e.name==='pulse'){pulseTime=time;pulseRing.position.set(game.player.pos[0],game.player.pos[1]+.1,game.player.pos[2]);sound(250,.35,.1);}if(e.name==='player_hit'){toast(e.data.by==='fall'?'Mây trượt khỏi đảo.':'Bóng Mực đến gần!');if(!settings.reduceMotion){document.body.classList.remove('hit-flash');void document.body.offsetWidth;document.body.classList.add('hit-flash');}sound(130,.4,.15);}if(e.name==='dash')sound(400,.15,.08);if(e.name==='jump'||e.name==='jump_pad')sound(500,.18,.07);if(e.name==='shade_spawned'){toast('⚠ Bóng Mực xuất hiện · '+e.data.id);sound(180,.35,.1);$('warning').textContent='⚠ Bóng Mực xuất hiện — xem hướng trên bản đồ';}if(e.name==='charm_picked'){toast('Bùa Gió: chân nhẹ như mây.');sound(990,.4,.1);}if(e.name==='drifter_steal')toast('Gió Lạc vừa cướp '+e.data.amount+' đom đóm!');if(e.name==='wind_warning'){$('warning').textContent='⚠ Gió mạnh sắp thổi!';sound(300,.5,.08);}if(e.name==='game_over')finish();}}
+function instance(m,i,pos,scale,rotation=0){dummy.position.fromArray(pos);dummy.scale.fromArray(scale);dummy.rotation.set(0,rotation,0);dummy.updateMatrix();m.setMatrixAt(i,dummy.matrix);}
+const shadeColor=new THREE.Color();
+function sync(time){const p=game.player;playerModel.position.fromArray(p.pos);playerModel.visible=!(game.invuln>0&&Math.floor(time*10)%2);if(Math.hypot(p.vel[0],p.vel[2])>.1)playerModel.rotation.y=Math.atan2(p.vel[0],p.vel[2]);legs.forEach((l,i)=>l.rotation.x=p.grounded&&mode==='playing'?Math.sin(time*12+i*Math.PI)*Math.min(Math.hypot(p.vel[0],p.vel[2])/6,.5):0);
+  game.lanterns.forEach((l,i)=>{const m=lanternModels[i];if(!m)return;const weak=fuelRules&&l.lit&&l.fuelUnits<1800,blink=weak?(.5+.5*Math.sin(time*Math.PI*2)):1;m.paper.color.set(l.lit?'#FFE9B0':'#5B5F6E');m.paper.emissiveIntensity=l.lit?1.2*blink:0;m.bulb.scale.y=l.lit?.64:.512;m.torn.visible=!l.lit;m.light.intensity=l.lit?25*blink:0;m.halo.material.opacity=l.lit?.7*blink:.01;m.safe.visible=l.lit&&(!fuelRules||l.fuelUnits>=1800);m.fuelBack.visible=m.fuelBar.visible=fuelRules&&l.lit;m.fuelBar.scale.x=Math.max(.001,l.fuelUnits/6000);m.fuelBar.material.color.set(weak?(settings.colorblind?'#FFFFFF':'#FF5A5F'):'#F2C14E');m.fuelBack.lookAt(camera.position);m.fuelBar.lookAt(camera.position);m.fuelBar.visible=m.fuelBar.visible&&(!weak||Math.sin(time*Math.PI*2)>=0);});
+  shadeBodies.count=shadeSkirts.count=game.shades.length;shadeEyes.count=game.shades.length*2;
+  game.shades.forEach((s,i)=>{const bob=settings.reduceMotion?0:Math.sin(time*3+i)*.1,rot=Math.atan2(game.player.pos[0]-s.pos[0],game.player.pos[2]-s.pos[2]);instance(shadeBodies,i,[s.pos[0],s.pos[1]+.85+bob,s.pos[2]],[.62,.8,.6],rot);instance(shadeSkirts,i,[s.pos[0],s.pos[1]+.25+bob,s.pos[2]],[1,1,1],rot);shadeColor.set(s.state==='stunned'?'#3A3450':'#120A1A');shadeBodies.setColorAt(i,shadeColor);shadeSkirts.setColorAt(i,shadeColor);for(let eye=0;eye<2;eye++){const x=(eye?1:-1)*.2;instance(shadeEyes,i*2+eye,[s.pos[0]+x*Math.cos(rot)+.53*Math.sin(rot),s.pos[1]+1+bob,s.pos[2]-x*Math.sin(rot)+.53*Math.cos(rot)],[.075,.1,.04],rot);}});
+  for(const m of [shadeBodies,shadeSkirts,shadeEyes]){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;m.computeBoundingSphere();}
+  game.motes.slice(0,500).forEach((m,i)=>{motePositions[i*3]=m.pos[0];motePositions[i*3+1]=m.pos[1]+.5+(settings.reduceMotion?0:Math.sin(time*2+i)*.15);motePositions[i*3+2]=m.pos[2];});moteGeometry.setDrawRange(0,Math.min(game.motes.length,500));moteGeometry.attributes.position.needsUpdate=true;moteGeometry.computeBoundingSphere();
+  charmModels.forEach((m,i)=>{m.visible=game.charms[i]?.available??false;m.rotation.y=time;});
+  while(drifterModels.length<game.drifters.length){const m=mesh(new THREE.TorusKnotGeometry(.25,.07,30,5),material('#8FA3B8',{emissive:'#8FA3B8',emissiveIntensity:.3}),scenery);drifterModels.push(m);}drifterModels.forEach((m,i)=>{const d=game.drifters[i];m.visible=Boolean(d);if(d){m.position.set(d.pos[0],d.pos[1]+1,d.pos[2]);m.rotation.y=time;}});
+  ambient.intensity=.15+.55*game.lanterns.filter(l=>l.lit).length/game.lanterns.length;
+  const age=time-pulseTime;pulseRing.visible=age<.65;if(pulseRing.visible){pulseRing.scale.setScalar(.4+age/.65*5);pulseRing.material.opacity=(1-age/.65)*.75;}
 }
-const cameraTarget = new THREE.Vector3(), cameraPosition = new THREE.Vector3();
-function animate(now) {
-  requestAnimationFrame(animate);
-  const elapsed = Math.min((now - last) / 1000, .1); last = now; const time = now / 1000;
-  if (mode === 'playing') {
-    if (keys.has('KeyQ')) yaw += elapsed * 90;
-    if (keys.has('KeyC')) yaw -= elapsed * 90;
-    accumulator += elapsed;
-    while (accumulator >= DT && mode === 'playing') {
-      const x = Number(keys.has('KeyD') || keys.has('ArrowRight')) - Number(keys.has('KeyA') || keys.has('ArrowLeft'));
-      const z = Number(keys.has('KeyS') || keys.has('ArrowDown')) - Number(keys.has('KeyW') || keys.has('ArrowUp'));
-      processEvents(game.step({ move: [x, z], cam_yaw_deg: yaw, jump: keys.has('Space'), interact: keys.has('KeyE'), pulse: keys.has('KeyF') }), time);
-      accumulator -= DT;
-    }
-  }
-  if (now > toastUntil) $('toast').classList.remove('show');
-  syncModels(time);
-  if (mode === 'intro' || (mode === 'paused' && previousMode === 'intro')) {
-    cameraPosition.set(41, 34, 43); cameraTarget.set(-1, 1, 0);
-    // Shift island to the right of the intro's copy without moving the world.
-    camera.setViewOffset(innerWidth, innerHeight, -innerWidth * .18, 0, innerWidth, innerHeight);
-  } else {
-    camera.clearViewOffset();
-    const p = game.player.pos, a = yaw * Math.PI / 180;
-    cameraPosition.set(p[0] + Math.sin(a) * 11.5, p[1] + 7.8, p[2] + Math.cos(a) * 11.5);
-    cameraTarget.set(p[0], p[1] + .8, p[2]);
-  }
-  camera.position.lerp(cameraPosition, mode === 'intro' ? .04 : .12); camera.lookAt(cameraTarget);
-  updateHUD(); drawMap(); renderer.render(scene, camera);
-  performanceFrames++;
-  if (performanceFrames % 60 === 0) { fps = Math.round(1 / Math.max(elapsed, .001)); $('scene').dataset.fps = fps; }
+const map=$('minimap').getContext('2d');
+function minimap(){map.clearRect(0,0,200,180);const scale=night===2?1.25:1.65,offset=night===2?35:0;map.save();map.translate(100-offset*scale,90);for(const c of game.world.centers){map.beginPath();map.arc(c[0]*scale,c[2]*scale,game.world.radius*scale,0,Math.PI*2);map.fillStyle='#2F5D50';map.fill();map.strokeStyle='#8ba29d88';map.stroke();}if(night===2){map.fillStyle='#C9B48A';map.fillRect(26*scale,-2*scale,18*scale,4*scale);}for(const l of game.lanterns){map.beginPath();map.arc(l.pos[0]*scale,l.pos[2]*scale,4,0,Math.PI*2);map.fillStyle=l.lit?'#FFB347':'#5B5F6E';map.fill();}for(const s of game.shades){map.beginPath();map.arc(s.pos[0]*scale,s.pos[2]*scale,2,0,Math.PI*2);map.fillStyle=settings.colorblind?'#00B3FF':'#7A3CFF';map.fill();}map.translate(game.player.pos[0]*scale,game.player.pos[2]*scale);map.beginPath();map.arc(0,0,3,0,Math.PI*2);map.fillStyle='#FFF6C2';map.fill();map.restore();}
+const camPos=new THREE.Vector3(),camTarget=new THREE.Vector3();
+function animate(now){requestAnimationFrame(animate);const dt=Math.min(.1,(now-last)/1000);last=now;const time=now/1000;
+  if(mode==='playing'){if(keys.has('KeyQ'))yaw+=dt*90;if(keys.has('KeyC'))yaw-=dt*90;accumulator+=dt;while(accumulator>=DT&&mode==='playing'){events(game.step({move:[Number(active('right'))-Number(active('left')),Number(active('back'))-Number(active('forward'))],cam_yaw_deg:yaw,jump:active('jump'),dash:active('dash'),interact:active('interact'),pulse:active('pulse')}),time);accumulator-=DT;}}
+  if(audio&&mode==='playing'&&audio.currentTime>nextMelody){sound([196,246.94,293.66,392,329.63,293.66,246.94,220][melodyStep++%8],1.5,.025);nextMelody=audio.currentTime+2;}
+  if(now>toastEnd)$('toast').classList.remove('show');sync(time);
+  if(mode==='menu'){const center=night===2?35:0;camPos.set(center+42,39,50);camTarget.set(center,1,0);camera.setViewOffset(innerWidth,innerHeight,-innerWidth*.15,0,innerWidth,innerHeight);}else{camera.clearViewOffset();const p=game.player.pos,a=yaw*Math.PI/180;camPos.set(p[0]+Math.sin(a)*11.5,p[1]+7.5,p[2]+Math.cos(a)*11.5);camTarget.set(p[0],p[1]+1,p[2]);}
+  camera.position.lerp(camPos,settings.reduceMotion?1:.15);camera.lookAt(camTarget);if(now-lastHUD>80){updateHUD();minimap();lastHUD=now;}renderer.render(scene,camera);
 }
-camera.position.set(41, 34, 43);
-window.addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
-$('loading').classList.add('hidden'); updateHUD(); requestAnimationFrame(animate);
+window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+buildWorld(1);visibility();$('loading').classList.add('hidden');requestAnimationFrame(animate);

@@ -1,0 +1,392 @@
+- banner "Artifact controls":
+  - button "Đảo Đèn Lồng Lab":
+    - generic: Đảo Đèn Lồng Lab
+    - generic: 
+  - dialog "Duplicate this artifact":
+    - heading "Duplicate this artifact" [level=2]
+    - generic: New
+    - button "Dismiss":
+      - generic: 
+    - text: Make a copy and it’s yours to edit and remix.
+    - button "Got it":
+      - generic: Got it
+  - status
+  - generic: Content is user-generated and unverified.
+  - img "Can view":
+    - generic: 
+    - text: Can view
+  - button "You":
+    - group "You":
+      - img "Nguyễn Sỹ Huy Kiên": NK
+  - button "Share":
+    - generic: 
+  - status
+  - alert
+- main:
+  - iframe [active] [id="frame-content"] [name="{\"hot\":{\"k\":\"0u2o86k0x4obfp\"},\"usable\":[\"db\"],\"n\":\"71hca0qz9ye\"}"]:
+    - generic: Đảo Đèn Lồng Day 12 · AI SDLC Lab
+    - tablist "Các phase":
+      - tab "Phase 1 PRD-0":
+        - generic: Phase 1
+        - generic: PRD-0
+      - tab "Phase 2 Ticket-02 · Ba hòn đảo":
+        - generic: Phase 2
+        - generic: Ticket-02 · Ba hòn đảo
+      - tab "Phase 3 Ticket-03 · Đèn cạn dầu" [selected]:
+        - generic: Phase 3
+        - generic: Ticket-03 · Đèn cạn dầu
+      - tab "Phase 4 Ticket-04 · Bình minh v1.0.0 · đang diễn ra":
+        - generic: Phase 4
+        - generic: Ticket-04 · Bình minh v1.0.0 · đang diễn ra
+    - button "Bật nền 3D"
+    - main:
+      - heading "TICKET-03 — CHANGE REQUEST \"Đèn cạn dầu\" (Phase 3)" [level=1]
+      - blockquote:
+        - paragraph:
+          - text: "Loại:"
+          - strong: Change Request — thay đổi luật cốt lõi
+          - text: "· Ưu tiên: Rất cao · Tag nộp:"
+          - code: phase-3
+          - text: "· Contract:"
+          - strong: v1.2
+      - heading "Vì sao thay đổi" [level=2]
+      - paragraph:
+        - text: "Playtest cho thấy người chơi giỏi thắp hết đèn trong 2 phút rồi game kết thúc, thiếu căng thẳng ở cuối Đêm. Nhà thiết kế quyết định:"
+        - strong: đèn thắp rồi vẫn có thể tắt
+        - text: ", mục tiêu chuyển từ \"thắp hết\" sang"
+        - strong: "\"giữ đảo sáng tới bình minh\""
+        - text: .
+      - blockquote:
+        - paragraph:
+          - text: ⚠ Ticket này
+          - strong: thay thế
+          - text: một số luật đã có. Những luật cũ bị thay được đánh dấu
+          - strong: "[THAY THẾ]"
+          - text: . Bạn phải ghi lại quyết định thiết kế (ví dụ một ADR ngắn) và cập nhật test của mình.
+      - separator
+      - blockquote:
+        - paragraph:
+          - strong: "Về sáng tạo:"
+          - text: phần sáng tạo của bạn từ các phase trước vẫn được giữ và vẫn được thêm ý riêng (kể cả nhân vật, kẻ địch mới), miễn là luật, số liệu và Test Contract dưới đây không bị đổi và đầu ra headless không đổi. Ý sáng tạo nào xung đột với luật mới thì phải điều chỉnh theo luật mới.
+      - heading "1. Nhiên liệu đèn — [THAY THẾ] luật \"đèn đã sáng không nhận thêm đom đóm\"" [level=2]
+      - table:
+        - rowgroup:
+          - row "Quy tắc Giá trị":
+            - columnheader "Quy tắc"
+            - columnheader "Giá trị"
+        - rowgroup:
+          - row "Nhiên liệu tối đa 100":
+            - cell "Nhiên liệu tối đa"
+            - cell "100"
+          - row "Khi vừa thắp (lần đầu hoặc thắp lại) fuel = 100":
+            - cell "Khi vừa thắp (lần đầu hoặc thắp lại)"
+            - cell "fuel = 100":
+              - code: fuel = 100
+          - 'row "Hao hụt khi đang sáng 1.0 đơn vị/giây (tính theo tick: 1/60 mỗi tick)"':
+            - cell "Hao hụt khi đang sáng"
+            - 'cell "1.0 đơn vị/giây (tính theo tick: 1/60 mỗi tick)"'
+          - 'row "Châm dầu Bấm Tương tác ở đèn đang sáng: used = min(đang mang, ceil((100 − fuel) / 10)), fuel = min(100, fuel + 10 × used), trừ used đom đóm. Đèn đầy dầu (used = 0) không được chọn khi tương tác, không phát sự kiện, không cộng điểm"':
+            - cell "Châm dầu"
+            - 'cell "Bấm Tương tác ở đèn đang sáng: used = min(đang mang, ceil((100 − fuel) / 10)), fuel = min(100, fuel + 10 × used), trừ used đom đóm. Đèn đầy dầu (used = 0) không được chọn khi tương tác, không phát sự kiện, không cộng điểm"':
+              - text: "Bấm Tương tác ở đèn đang sáng:"
+              - code: used = min(đang mang, ceil((100 − fuel) / 10))
+              - text: ","
+              - code: fuel = min(100, fuel + 10 × used)
+              - text: ", trừ"
+              - code: used
+              - text: đom đóm. Đèn đầy dầu (
+              - code: used = 0
+              - text: ) không được chọn khi tương tác, không phát sự kiện, không cộng điểm
+          - row "Chọn đèn khi tương tác Chỉ xét đèn nhận được (chưa sáng, hoặc sáng nhưng chưa đầy dầu); gần nhất, bằng nhau thì id nhỏ hơn":
+            - cell "Chọn đèn khi tương tác"
+            - cell "Chỉ xét đèn nhận được (chưa sáng, hoặc sáng nhưng chưa đầy dầu); gần nhất, bằng nhau thì id nhỏ hơn":
+              - text: Chỉ xét đèn
+              - strong: nhận được
+              - text: (chưa sáng, hoặc sáng nhưng chưa đầy dầu); gần nhất, bằng nhau thì id nhỏ hơn
+          - row "Độ chính xác Nên tính dầu theo đơn vị nguyên 1/60 để không bị sai số số thực; chỉ làm tròn khi xuất ra":
+            - cell "Độ chính xác"
+            - cell "Nên tính dầu theo đơn vị nguyên 1/60 để không bị sai số số thực; chỉ làm tròn khi xuất ra"
+          - row "Hết dầu (fuel ≤ 0) Đèn chuyển sang tắt, deposited = 0, phát sự kiện lantern_out, ánh sáng môi trường giảm theo. Đèn nhớ ever_lit = true":
+            - cell "Hết dầu (fuel ≤ 0)":
+              - text: Hết dầu (
+              - code: fuel ≤ 0
+              - text: )
+            - cell "Đèn chuyển sang tắt, deposited = 0, phát sự kiện lantern_out, ánh sáng môi trường giảm theo. Đèn nhớ ever_lit = true":
+              - text: Đèn chuyển sang
+              - strong: tắt
+              - text: ","
+              - code: deposited = 0
+              - text: ", phát sự kiện"
+              - code: lantern_out
+              - text: ", ánh sáng môi trường giảm theo. Đèn nhớ"
+              - code: ever_lit = true
+          - row "Thắp lại Đèn đã từng sáng (ever_lit) chỉ cần 5 đom đóm; đèn chưa từng sáng vẫn cần 10":
+            - cell "Thắp lại"
+            - cell "Đèn đã từng sáng (ever_lit) chỉ cần 5 đom đóm; đèn chưa từng sáng vẫn cần 10":
+              - text: Đèn đã từng sáng (
+              - code: ever_lit
+              - text: ) chỉ cần
+              - strong: "5"
+              - text: đom đóm; đèn chưa từng sáng vẫn cần 10
+          - row "Hiển thị Thanh dầu trên đèn đang sáng; khi fuel < 30 thì đèn và thanh dầu nhấp nháy chậm (1 Hz)":
+            - cell "Hiển thị"
+            - cell "Thanh dầu trên đèn đang sáng; khi fuel < 30 thì đèn và thanh dầu nhấp nháy chậm (1 Hz)":
+              - text: Thanh dầu trên đèn đang sáng; khi
+              - code: fuel < 30
+              - text: thì đèn và thanh dầu nhấp nháy chậm (1 Hz)
+      - heading "2. Bóng Mực hút dầu — [THAY THẾ] luật \"Bóng Mực không bao giờ vào vùng an toàn\"" [level=2]
+      - list:
+        - text: Đèn có
+        - code: fuel < 30
+        - strong: mất vùng an toàn
+        - text: . Đúng 30 thì vẫn còn vùng an toàn.
+        - strong: Chỉ
+        - text: Bóng Mực ở trạng thái
+        - code: wander
+        - text: "mới chọn đèn yếu: đi tới"
+        - strong:
+          - text: đèn sáng có
+          - code: fuel < 30
+          - text: gần nhất
+        - text: (bằng nhau thì id nhỏ hơn). Không có thì đi về đèn tắt gần nhất như trước. Bóng đang
+        - code: chase
+        - text: không đổi mục tiêu.
+        - text: "Khi cách đèn đó ≤ 2 m (XZ): chuyển sang trạng thái mới"
+        - strong:
+          - code: drain
+        - text: ", đứng yên và hút"
+        - strong: 5 fuel/giây liên tục
+        - text: (5/60 mỗi tick). Nhiều con thì cộng dồn. Đèn vẫn tự hao 1/giây.
+        - text: Từ
+        - code: drain
+        - text: ": sang"
+        - code: chase
+        - text: nếu Mây vào trong 6 m; sang
+        - code: stunned
+        - text: nếu trúng Tỏa Sáng; sang
+        - code: wander
+        - text: nếu đèn tắt, nếu
+        - code: fuel
+        - text: được châm lên ≥ 30, hoặc nếu cách đèn > 2 m.
+        - text: Hết choáng thì về
+        - code: wander
+        - text: .
+        - listitem: Khi đèn được châm dầu lên ≥ 30 lúc có Bóng Mực trong vùng 6 m, các con đó bị đẩy ra mép vùng trong tối đa 30 tick và không gây sát thương trong lúc đó (giống khi đèn vừa thắp).
+      - heading "3. Luật thắng mới — [THAY THẾ] \"thắng ngay khi tất cả đèn sáng\"" [level=2]
+      - table:
+        - rowgroup:
+          - row "Quy tắc Giá trị mới":
+            - columnheader "Quy tắc"
+            - columnheader "Giá trị mới"
+        - rowgroup:
+          - row "Thời gian Đêm 1 / 2 / 3 240 / 270 / 300 s":
+            - cell "Thời gian Đêm 1 / 2 / 3"
+            - cell "240 / 270 / 300 s":
+              - strong: 240 / 270 / 300 s
+          - 'row "Thắng Mây còn sống khi hết giờ (bình minh) và số đèn đang sáng tại tick cuối ≥ ceil(0.6 × tổng đèn): Đêm 1 cần 3/5, Đêm 2 cần 4/6, Đêm 3 cần 5/7"':
+            - cell "Thắng"
+            - 'cell "Mây còn sống khi hết giờ (bình minh) và số đèn đang sáng tại tick cuối ≥ ceil(0.6 × tổng đèn): Đêm 1 cần 3/5, Đêm 2 cần 4/6, Đêm 3 cần 5/7"':
+              - text: Mây
+              - strong: còn sống khi hết giờ
+              - text: (bình minh)
+              - strong: và
+              - text: số đèn đang sáng tại tick cuối ≥
+              - code: ceil(0.6 × tổng đèn)
+              - text: ": Đêm 1 cần 3/5, Đêm 2 cần 4/6, Đêm 3 cần 5/7"
+          - row "Không còn thắng sớm Thắp đủ đèn không kết thúc Đêm":
+            - cell "Không còn thắng sớm"
+            - cell "Thắp đủ đèn không kết thúc Đêm":
+              - text: Thắp đủ đèn
+              - strong: không
+              - text: kết thúc Đêm
+          - row "Thua Hết Ngọn Lửa (ngay lập tức, kể cả ở tick cuối) · hoặc hết giờ mà số đèn sáng dưới ngưỡng":
+            - cell "Thua"
+            - cell "Hết Ngọn Lửa (ngay lập tức, kể cả ở tick cuối) · hoặc hết giờ mà số đèn sáng dưới ngưỡng"
+          - 'row "Lý do kết thúc Thắng: dawn_survived · Thua: dawn hoặc no_flames"':
+            - cell "Lý do kết thúc"
+            - 'cell "Thắng: dawn_survived · Thua: dawn hoặc no_flames"':
+              - text: "Thắng:"
+              - code: dawn_survived
+              - text: "· Thua:"
+              - code: dawn
+              - text: hoặc
+              - code: no_flames
+          - 'row "Thứ tự trong tick Theo thứ tự xử lý của Ticket-02, bổ sung: ở bước 2 trừ dầu (hao + bị hút); ngay sau bước 2, đèn có fuel ≤ 0 tắt. Bước \"xét thắng/thua\" diễn ra sau mọi cập nhật của tick, kể cả tick bình minh: hết Ngọn Lửa luôn thua no_flames trước"':
+            - cell "Thứ tự trong tick"
+            - 'cell "Theo thứ tự xử lý của Ticket-02, bổ sung: ở bước 2 trừ dầu (hao + bị hút); ngay sau bước 2, đèn có fuel ≤ 0 tắt. Bước \"xét thắng/thua\" diễn ra sau mọi cập nhật của tick, kể cả tick bình minh: hết Ngọn Lửa luôn thua no_flames trước"':
+              - text: "Theo thứ tự xử lý của Ticket-02, bổ sung: ở bước 2 trừ dầu (hao + bị hút); ngay sau bước 2, đèn có"
+              - code: fuel ≤ 0
+              - text: "tắt. Bước \"xét thắng/thua\" diễn ra sau mọi cập nhật của tick, kể cả tick bình minh: hết Ngọn Lửa luôn thua"
+              - code: no_flames
+              - text: trước
+      - heading "4. Sức chứa tăng dần (mới)" [level=2]
+      - paragraph:
+        - text: Sức chứa =
+        - code: 10 + 2 × successful_lights
+        - text: ", tối đa"
+        - strong: "20"
+        - text: .
+        - code: successful_lights
+        - text: = số lần thắp thành công trong Đêm (tính cả thắp lại; đèn đặt sẵn bằng scenario không tính). Đặt lại về 0 ở đầu mỗi Đêm. HUD hiển thị
+        - code: đang mang / sức chứa
+        - text: .
+      - heading "5. Điểm mới — [THAY THẾ] toàn bộ công thức điểm cũ" [level=2]
+      - table:
+        - rowgroup:
+          - row "Sự kiện Điểm":
+            - columnheader "Sự kiện"
+            - columnheader "Điểm"
+        - rowgroup:
+          - row "Mỗi đom đóm nạp vào đèn (thắp mới, thắp lại hoặc châm dầu) +5":
+            - cell "Mỗi đom đóm nạp vào đèn (thắp mới, thắp lại hoặc châm dầu)"
+            - cell "+5"
+          - row "Thắp lần đầu +100":
+            - cell "Thắp lần đầu"
+            - cell "+100"
+          - row "Thắp lại +40":
+            - cell "Thắp lại"
+            - cell "+40"
+          - row "Bóng Mực trúng Tỏa Sáng Tổng +5 mỗi con; tổng +15 nếu ngay trước đó nó đang drain":
+            - cell "Bóng Mực trúng Tỏa Sáng"
+            - cell "Tổng +5 mỗi con; tổng +15 nếu ngay trước đó nó đang drain":
+              - text: Tổng +5 mỗi con;
+              - strong: tổng +15
+              - text: nếu ngay trước đó nó đang
+              - code: drain
+          - 'row "Bình minh (chỉ khi thắng): mỗi đèn đang sáng +50 + floor(fuel)"':
+            - 'cell "Bình minh (chỉ khi thắng): mỗi đèn đang sáng"'
+            - cell "+50 + floor(fuel)":
+              - text: +50 +
+              - code: floor(fuel)
+          - 'row "Bình minh (chỉ khi thắng): mỗi Ngọn Lửa còn lại +50"':
+            - 'cell "Bình minh (chỉ khi thắng): mỗi Ngọn Lửa còn lại"'
+            - cell "+50"
+          - row "Thưởng thời gian Bỏ":
+            - cell "Thưởng thời gian"
+            - cell "Bỏ":
+              - strong: Bỏ
+          - row "Tổng điểm game, chơi lại Không đổi so với Ticket-02":
+            - cell "Tổng điểm game, chơi lại"
+            - cell "Không đổi so với Ticket-02"
+      - heading "6. Chế độ mù màu (mới)" [level=2]
+      - paragraph:
+        - text: Thêm cài đặt
+        - strong: "\"Bảng màu dễ phân biệt\""
+        - text: "(được lưu):"
+      - list:
+        - text: Viền và mắt Bóng Mực đổi từ
+        - code: "#7A3CFF"
+        - text: sang
+        - code: "#00B3FF"
+        - text: .
+        - text: Màu cảnh báo UI đổi từ
+        - code: "#FF5A5F"
+        - text: sang
+        - code: "#FFFFFF"
+        - text: ", kèm biểu tượng ⚠."
+        - text: Đèn tắt và đèn sáng phải phân biệt được
+        - strong: không cần màu
+        - text: ": đèn tắt bị xẹp 20% và giấy có vết rách; đèn sắp hết dầu nhấp nháy."
+      - heading "7. Test Contract v1.2 (thay đổi)" [level=2]
+      - list:
+        - code: "contract_version: \"1.2\""
+        - text: .
+        - code: tuning
+        - text: thêm
+        - code: "fuel_max: 100"
+        - text: ","
+        - code: "fuel_decay_per_s: 1.0"
+        - text: ","
+        - code: "fuel_per_mote: 10"
+        - text: ","
+        - code: "relight_cost: 5"
+        - text: ","
+        - code: "win_ratio: 0.6"
+        - text: ","
+        - code: "drain_per_s: 5"
+        - text: ","
+        - code: "low_fuel_threshold: 30"
+        - text: ","
+        - code: "capacity_max: 20"
+        - text: ;
+        - code: night1_duration_s
+        - text: = 240,
+        - code: night2_duration_s
+        - text: = 270,
+        - code: night3_duration_s
+        - text: = 300.
+        - text: "Snapshot: mỗi đèn thêm"
+        - code: fuel
+        - text: (số thực, 1 chữ số thập phân; đèn tắt có
+        - code: "fuel: 0"
+        - text: ),
+        - code: ever_lit
+        - text: và
+        - code: relit_count
+        - text: ;
+        - code: player
+        - text: thêm
+        - code: capacity
+        - text: . Bóng Mực có thêm trạng thái
+        - code: drain
+        - text: .
+        - text: "Scenario: mỗi đèn được đặt"
+        - code: lit
+        - text: ","
+        - code: fuel
+        - text: ","
+        - code: ever_lit
+        - text: ;
+        - code: player
+        - text: thêm
+        - code: successful_lights
+        - text: ;
+        - code: shades[]
+        - text: thêm
+        - code: target_lantern_id
+        - text: . Đèn đặt
+        - code: "lit: true"
+        - text: mà không có
+        - code: fuel
+        - text: thì mặc định
+        - code: "fuel: 100"
+        - text: .
+        - text: "Sự kiện mới:"
+        - code: "refuel {lantern_id, amount, fuel}"
+        - text: ","
+        - code: "lantern_out {lantern_id}"
+        - text: ","
+        - code: "fuel_drain {lantern_id, shade_id, fuel}"
+        - text: (ghi
+        - strong: mỗi 60 tick
+        - text: khi đang hút).
+        - code: lantern_lit
+        - text: thêm
+        - code: "relight: true|false"
+        - text: .
+        - code: game_over.reason
+        - text: có thêm
+        - code: dawn_survived
+        - text: ;
+        - code: all_lit
+        - text: không còn dùng.
+      - heading "Định nghĩa hoàn thành (DoD)" [level=2]
+      - list:
+        - listitem: Có bằng chứng game chạy đúng các yêu cầu của phase (định dạng tự chọn).
+        - listitem: Có ít nhất 1 ghi chú quyết định thiết kế (ADR hoặc tương đương, tên và vị trí tự chọn) mô tả cách bạn thay đổi mô hình trạng thái đèn và luật thắng.
+        - text: Test cũ bị luật mới làm sai phải được
+        - strong: cập nhật hoặc xóa có ghi lý do
+        - text: ", không được bỏ qua (skip) âm thầm."
+        - listitem: Có changelog (tên và vị trí tự chọn) liệt kê các thay đổi phá vỡ tương thích (breaking changes) của Phase 3.
+        - listitem: Mọi test ẩn Phase 1–2 không bị thay thế vẫn đạt.
+    - button "Hỏi trợ giảng"
+    - contentinfo: Đảo Đèn Lồng · Day 12 AI SDLC Lab. Các phase mới xuất hiện ở thanh trên khi giảng viên phát hành.
+- alert
+- alert
+- status
+- status
+- status
+- status
+- status
+- status
+- status

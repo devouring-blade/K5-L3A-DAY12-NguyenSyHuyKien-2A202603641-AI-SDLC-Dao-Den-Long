@@ -36,8 +36,8 @@ test('zero ticks emits initial snapshot and end without collecting nearby mote',
   const f = fixture(t);
   const scenario = f.save('scenario.json', { random_motes: false, random_shades: false, motes: [[0, 0, 0]] });
   const r = f.execute(['--scenario', scenario], 0);
-  assert.equal(r.status, 0); assert.equal(r.lines.length, 2);
-  assert.equal(r.lines[0].player.carried, 0); assert.equal(r.lines[1].ticks, 0);
+  assert.equal(r.status, 0); assert.equal(r.lines.length, 3);
+  assert.equal(r.lines[0].player.carried, 0); assert.equal(r.lines.at(-1).ticks, 0);
 });
 test('CLI stops early on terminal and event uses produced tick', t => {
   const f = fixture(t);
@@ -62,7 +62,7 @@ test('invalid JSON, schema, duplicate ticks, missing files and invalid flags ret
     ['--inputs', f.save('frames.json', { frames: [{ tick: 1 }, { tick: 1 }] })],
     ['--inputs', f.save('bool.json', { frames: [{ tick: 0, interact: 'yes' }] })],
     ['--inputs', path.join(os.tmpdir(), 'lantern-file-that-does-not-exist.json')],
-    ['--snapshot-every', '0'], ['--unknown', '1'], ['--seed', '1'], ['--night', '2']
+    ['--snapshot-every', '0'], ['--unknown', '1'], ['--seed', '1'], ['--night', '4']
   ];
   for (const flags of cases) {
     const r = f.execute(flags);

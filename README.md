@@ -1,14 +1,14 @@
 # Đảo Đèn Lồng
 
-**Phase 1 — PRD-0 / Test Contract v1.0.** Game 3D góc nhìn thứ ba: cùng Mây gom
-đom đóm, thắp lại 5 ngọn đèn Đảo Bến và tránh Bóng Mực trước bình minh.
+**Phase 2 — Test Contract v1.1.** Game 3D góc nhìn thứ ba: cùng Mây gom
+đom đóm, thắp đèn trên ba hòn đảo và tránh Bóng Mực trước bình minh.
 
 **Demo:** chạy bản chơi theo hướng dẫn dưới. Chưa có video MP4; video và Release
 v1.0.0 thuộc bàn giao cuối, sau khi các ticket được phát hành.
 
 Học viên: **Nguyễn Sỹ Huy Kiên · 2A202603641 · K5-L3A**.
 Đề Phase 1 đã đọc tại [lab board](https://claude.ai/artifact/Q1RYyv1dxjUczzCbd2ZnoW).
-Phase 2–4 hiện bị khóa “Chưa phát hành”; repo chưa tuyên bố hoàn thành toàn bộ lab.
+Đã đọc đủ Ticket-02/03/04 sau đăng nhập Claude; đang thực hiện lần lượt.
 
 ## Cài và chơi — 3 lệnh
 
@@ -28,21 +28,22 @@ Thư mục `dist/` có thể phục vụ bằng một HTTP static server khác.
 |---|---|
 | WASD hoặc phím mũi tên | Di chuyển theo camera |
 | Space | Nhảy |
+| Shift | Lướt |
 | E | Nạp đom đóm vào đèn gần nhất |
-| F | Tỏa sáng, tốn 2 đom đóm |
+| F | Tỏa sáng, tốn 3 đom đóm |
 | Q / C hoặc kéo chuột | Xoay camera |
 | P / Esc | Tạm dừng / tiếp tục |
 | H hoặc nút ? | Hướng dẫn |
 
-Nhặt đom đóm tự động trong 1,5 m; túi chứa 18 con. Mỗi đèn cần 6 con, có thể nạp
-nhiều lần. Đèn đã thắp tạo vùng an toàn 5 m. Pulse làm choáng và đẩy Bóng Mực
-trong 7 m. Thắp đủ 5 đèn thì thắng; hết 3 ngọn lửa hoặc hết 5 phút thì thua.
-Chọn **Chơi lại đêm 1** sau khi kết thúc. Rìa đảo chặn di chuyển, không có phạt rơi.
+Nhặt đom đóm trong XZ 1 m và chênh cao <=1,5 m; túi chứa 10 con. Mỗi đèn cần 10 con,
+nạp nhiều lần. Đèn sáng có vùng an toàn 6 m. Pulse 3D 5 m, stun 120 tick và đẩy 4 m.
+Thắp hết đèn thì thắng; hết 3 ngọn lửa hoặc hết giờ thì thua. Rơi khỏi đảo mất một lửa
+và toàn bộ đom đóm, hồi sinh sau 60 tick. Đêm 1/2/3 có 5/6/7 đèn và 300/330/360 giây.
 
 ## Điểm số
 
-- Mỗi đom đóm nhặt: +10; mỗi đèn được thắp: +100.
-- Mỗi Bóng Mực trúng pulse: +15.
+- Mỗi đom đóm nạp: +10; mỗi đèn được thắp: +100. Nhặt không cộng điểm.
+- Mỗi Bóng Mực trúng pulse: +5.
 - Khi thắng: +2 × floor(giây còn lại), +50 × ngọn lửa còn lại, chỉ cộng một lần.
 - Dựng scenario không cộng điểm và không phát event.
 
@@ -57,17 +58,17 @@ npm run verify
 npm run smoke:clean
 ```
 
-`verify` chạy test, build, các scenario, tạo một lượt thắng trên thế giới mặc định
-qua input thông thường rồi phát lại CLI hai lần và so từng byte. Bất cứ bước sai nào
-đều trả mã khác 0. Kết quả gốc nằm trong [docs/proof/phase-1](docs/proof/phase-1/),
-có [báo cáo và hash mã nguồn](docs/proof/phase-1/report.json), TAP, input và JSONL.
+`verify` chạy test, build, các scenario tính năng, so replay từng byte và chạy đủ thời lượng
+ba đêm. Sai bất cứ bước nào trả mã khác 0. Bằng chứng phase hiện tại ở
+[docs/proof/phase-2](docs/proof/phase-2/), gồm report/hash, TAP, scenario, input và JSONL.
+Lượt thắng thế giới mặc định của Phase 1 giữ nguyên ở docs/proof/phase-1 và tag phase-1.
 `smoke:clean` cài lại từ cache npm trong thư mục tạm trống, build và chạy headless;
 cần đã chạy `npm ci` ít nhất một lần để có cache, không cần tải mạng thêm.
 
 Đã cấu hình GitHub Actions trên Ubuntu và macOS; trạng thái CI chỉ được xác nhận
 khi workflow thực sự chạy. Số đo local hiện lấy trên Windows, không thay thế test ẩn.
 
-## Headless — Test Contract v1.0
+## Headless — Test Contract v1.1
 
 CLI chỉ cần Node.js; không khởi tạo Three.js, cửa sổ hoặc GPU.
 
@@ -76,7 +77,7 @@ node src/cli.mjs --seed 12 --night 1 --ticks 600 --out out.jsonl
 node src/cli.mjs --seed 12 --night 1 --scenario tests/scenarios/collect-deposit.json --inputs tests/scenarios/collect-deposit-inputs.json --ticks 20 --out collect.jsonl --snapshot-every 10
 ```
 
-Các cờ: `--seed`, `--night 1`, `--scenario` (tùy chọn), `--inputs` (tùy chọn),
+Các cờ: `--seed`, `--night 1|2|3`, `--scenario` (tùy chọn), `--inputs` (tùy chọn),
 `--ticks`, `--out`, `--snapshot-every` (mặc định 10). Logic cố định 60 Hz;
 snapshot tick 0 trước input, bước input k tạo trạng thái/event k+1.
 Không có input thì đứng yên; field vắng mặt giữ giá trị cũ; nút chỉ kích hoạt
@@ -104,5 +105,5 @@ không dùng RNG simulation, nên không thay đổi đầu ra headless.
 - [README đề lab gốc](docs/lab/README.md), [GUIDE](GUIDE.md), [RULES](RULES.md),
   [CHECKPOINTS](CHECKPOINTS.md), [RUBRIC](RUBRIC.md), [SUBMISSION](SUBMISSION.md).
 
-Chưa có Ticket-02/03/04, tag phase-2/3/4, Release v1.0.0 hoặc video demo cuối.
-Không tạo bằng chứng hoặc mốc phát hành cho phase chưa được đọc và thực hiện.
+Phase 3/4 và Release/video còn đang triển khai. Không sửa tag cũ hoặc ghi đạt
+cho số đo chưa thực hiện. Ghi chú hiện hành: docs/notes/phase-2.md.

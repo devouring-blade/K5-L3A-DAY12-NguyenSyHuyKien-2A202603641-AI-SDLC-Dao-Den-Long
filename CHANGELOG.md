@@ -1,5 +1,13 @@
 # Thay đổi
 
+## 0.2.0 — Phase 2
+
+- Chuẩn hóa tuning, 3 bản đồ, terrain/bridge/ramp/pad, dash, fall/respawn.
+- FSM Bóng Mực, spawn lịch chuẩn, Gió Lạc, Bùa Gió và pause tick/sim_tick.
+- Chuỗi đêm, HUD, nhạc/cue, cài đặt lưu giữa các lần mở; renderer instancing.
+- Contract v1.1, test thay các giả định Phase 1 có ghi lý do; thêm kiểm tra CLI pause.
+- Sửa CLI dừng nhầm khi state=paused, phát hiện bằng scenario pause/resume thực tế.
+
 ## 0.1.0 — Phase 1
 
 - Game 3D Đêm 1, Mây đội nón lá có đèn nhỏ, đảo tròn và 5 đèn lớn.
