@@ -1,5 +1,14 @@
 # Thay đổi
 
+## 1.0.0 — Phase 4
+
+- Contractv1.3; benchmark renderer thật200shade/100mote/3lamp, cửa sổ1280×720.
+- Soak10đêm cùng tiến trình, RSS thật và chế độ V8 hạn chế code cache/nursery.
+- Leaderboard local/top10/export; phím tùy chỉnh, báo trùng/reset, lưu settings.
+- Chữ>=18px, chữ lớn, reduced motion, cue visual; video gameplay và gói web sẵn chạy.
+- Tối ưu AI tránh lọc/sort mảng mỗi shade và bỏ tính bounding sphere mỗi frame;
+  render pixelratio1 thống nhất, không giảm hiệu ứng riêng cho benchmark.
+
 ## 0.3.0 — Phase 3 (breaking changes)
 
 - Đèn có dầu, refuel/out/relight, ever_lit/relit_count và capacity10..20.

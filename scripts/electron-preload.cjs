@@ -1,0 +1,1 @@
+const{contextBridge,ipcRenderer}=require('electron');contextBridge.exposeInMainWorld('labRuntime',{config:()=>ipcRenderer.invoke('runtime-config'),report:value=>ipcRenderer.invoke('benchmark-result',value),saveRecording:buffer=>ipcRenderer.invoke('recording-result',buffer),fail:message=>ipcRenderer.send('runtime-error',String(message))});

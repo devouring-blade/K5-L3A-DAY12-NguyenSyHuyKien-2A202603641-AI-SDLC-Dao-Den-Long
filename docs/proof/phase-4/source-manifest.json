@@ -1,0 +1,31 @@
+{
+  "generated_at": "2026-11-21T04:19:11.591Z",
+  "sha256": {
+    "bench.json": "cc77da1919f9daf00bebcd49153fcf86e4f25308a25ac16a6c7c8db9b1a6e204",
+    "docs/demo/demo.mp4": "d1e961f7875093340355ecf6f31668834346dfd3f85fc81d9b02d10677082933",
+    "game.contract.json": "be58a48fc4ceb22ff32079e7bf106f8c964457a456b732ee20a5e7d9dc01c490",
+    "package-lock.json": "c9c8a998898735ffbc3079a0c1d879bc5dae7715af1bdb4c67e4566afdbb67ff",
+    "package.json": "0e19b6cb09517f2c8c306d2c0341068912e446c8872d2ab27176066cf50086b7",
+    "scripts/bench.mjs": "bf30ecb342910513babbef827820403ff79bf9cdfa4104df5bdc23476d7581be",
+    "scripts/build.mjs": "03b134e39f82e7334030cfb65df30da9f894400928a32c33a9241a1b4d814e03",
+    "scripts/electron-main.cjs": "ca71ecaa3cf3bcdb1409a0341a46090e4143f1b45e0f34e5670b10a17f443152",
+    "scripts/electron-preload.cjs": "2bf12f78d70820d4a6159def08bc189993626f219971db88ac5493e2703fb5b4",
+    "scripts/package_release.py": "fbdae15696f64e00a8041c9c27d5f2a8a2db9df1ba5bb704c19a8db598344eca",
+    "scripts/prepare-benchmark.mjs": "f1aca3b99246933ff4fa4a791adb1622dd3a534ddc712da0489fdb0f7648b1a9",
+    "scripts/serve.mjs": "9df9e8f3a9287690483454b3642f80bf3c862b7854a5ce071e6389958a2c32f4",
+    "scripts/smoke-clean.mjs": "b15cc29165e93239fd951c47cb2bd85cd21f654e8f64754b77012cfda4d2d31a",
+    "scripts/soak.mjs": "49fc43d05a49bcaf7cf222c68acbac3b081c0ae489be634077bb57cd71bef830",
+    "scripts/verify.mjs": "9f4ca43c0fabe01aaeea18a76686151922abcaa14dbb88b7eb8cb0f65072318b",
+    "soak.json": "a5d41c8a918b019f37bd6b617180ba6befc1653016f1a20a7ab4df6b2e5f733e",
+    "src/cli.mjs": "73c733a3213e050dadccfae3fed87c356330c76ba72d2a133bf48805a2a36783",
+    "src/leaderboard.mjs": "5ceef3290469064803db369bb717d25acc1965151a191b44511061ee036287cd",
+    "src/preferences.mjs": "2b3f6c42aabdf3d8b677bf55a85c441e39d1f95ecd97de9762a47a877f1008ee",
+    "src/simulation.mjs": "22ea7305272cd5a291ff2a02778e464a539be4ab511e5dc7d67783a299c42e6a",
+    "src/validation.mjs": "60600533e9f528188c9ed7ff7d1cd860bfd6c73f4bc1025dd26346f1b2b38466",
+    "src/world.mjs": "e79a51543033be704c6679381b7a2a02e18de3314a3575b39a921b017e1ee1f8",
+    "web/app.mjs": "9fceb6aa70ddf8c1c327060c0bb610f000d04056875d8803feadde4e988292ee",
+    "web/benchmark.mjs": "ae90c764935ada08a529d199920a4e9d08901b44e4b32f3493928fdf5734206d",
+    "web/index.html": "33efe05ff6418556e243e75d2094bc3598b56d118528ecfe7bc7e8a2bcff9d0c",
+    "web/style.css": "813a0902c3b6eadddbd96da749c9206df7dcd67f93787b34149312999a696417"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "duration_s": 59.23,
+  "fps": 30.0,
+  "size": [
+    1280,
+    720
+  ],
+  "codec": "h264",
+  "bytes": 3044251,
+  "sha256": "d1e961f7875093340355ecf6f31668834346dfd3f85fc81d9b02d10677082933",
+  "recording": "Real renderer with explicitly labelled automated controller and real verification evidence."
+}

@@ -1,0 +1,23 @@
+{
+  "contract_version": "1.3",
+  "avg_fps": 61.943953883576135,
+  "p1_low_fps": 24.358974358974613,
+  "frame_ms_p95": 23.299999999999272,
+  "frames": 1859,
+  "measured_duration_s": 30.010999999999946,
+  "load_ms": 3447.931396484375,
+  "peak_mem_mb": null,
+  "vsync_off": true,
+  "renderer": "Three.js 187 / Electron 45.4.1 / ANGLE (Intel, Intel(R) Iris(R) Xe Graphics (0x00009A49) Direct3D11 vs_5_0 ps_5_0, D3D11)",
+  "os": "win32 10.0.26200",
+  "scene": {
+    "shades": 200,
+    "motes": 100,
+    "lit_lanterns": 3
+  },
+  "resolution": [
+    1282,
+    722
+  ],
+  "warmup_s": 3
+}

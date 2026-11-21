@@ -1,21 +1,28 @@
 {
   "name": "dao-den-long",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Đảo Đèn Lồng — Phase 1, shared deterministic simulation and 3D web game",
+  "description": "Đảo Đèn Lồng — Three-night 3D game and deterministic Test Contract1.3",
   "scripts": {
+    "postinstall": "node scripts/prepare-benchmark.mjs",
     "build": "node scripts/build.mjs",
     "start": "node scripts/serve.mjs",
     "test": "node --test tests/*.test.mjs",
     "headless": "node src/cli.mjs",
     "verify": "node scripts/verify.mjs",
-    "smoke:clean": "node scripts/smoke-clean.mjs"
+    "smoke:clean": "node scripts/smoke-clean.mjs",
+    "bench": "node scripts/bench.mjs",
+    "soak": "node --jitless --max-semi-space-size=1 scripts/soak.mjs",
+    "demo": "node scripts/bench.mjs --mode demo --seed 12 --duration 60 --out docs/demo/demo.webm"
   },
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
     "three": "0.187.0"
+  },
+  "devDependencies": {
+    "electron": "45.4.1"
   }
 }

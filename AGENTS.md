@@ -16,3 +16,6 @@
 - Phase 2: dùng số chuẩn Ticket-02, world.mjs là nguồn terrain/map cho CLI và renderer. Khi pause, CLI vẫn phải đọc đủ wall ticks để nhận resume; chỉ won/lost mới dừng sớm.
 - Không sửa bằng chứng phase cũ. verify tự chọn thư mục theo contract_version; thay luật cũ phải ghi lý do ở ghi chú phase.
 - Phase 3: fuelUnits là số nguyên 1/60; không làm tròn simulation. Chỉ xét bình minh sau decay/drain/out/hit; no_flames luôn ưu tiên. Không dùng all_lit ở v1.2+.
+- Phase 4: bench phải mở renderer1280×720 và đo dt thật sau warmup3s; không suy FPS từ tốc độ headless. Lệnh chuẩn ở game.contract.json.
+- Soak dùng V8 --jitless --max-semi-space-size=1 để giới hạn code cache/nursery; đo RSS thật, nếu vượt1.2× hoặc crash thì phải thoát1. Không chèn dữ liệu giả vào baseline.
+- Chỉ tạo phase-4/v1.0.0 khi có đủ test, bench.json, soak.json, demoMP4 và đóng gói. GitHub chưa có auth thì ghi rõ, không tuyên bố đã publish.

@@ -6,3 +6,8 @@ dist/
 *.log
 .DS_Store
 Thumbs.db
+.tools/
+data/
+*.webm
+release/
+*.console.txt

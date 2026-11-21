@@ -1,5 +1,8 @@
 # Nhật ký AI và retro
 
+> Tổng hợp đủ bốn phase và số đo cuối: [retro.md](retro.md).
+> Ghi chép Phase1 dưới đây được giữ làm lịch sử, không thay bằng kết quả phase sau.
+
 ## Phase 1
 
 Yêu cầu người dùng: đọc repo và thực hiện lab. Công cụ hỗ trợ: OpenAI Codex,

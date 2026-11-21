@@ -10,6 +10,13 @@
 - Three.js 0.187.0: https://github.com/mrdoob/three.js — MIT, bản quyền tác giả Three.js.
   Giấy phép được giữ trong npm package và chép vào `dist/vendor/LICENSE-three.txt` khi build.
 - Font hệ thống của máy người dùng; không tải font từ dịch vụ bên ngoài.
+- Electron45.4.1 (MIT): https://www.electronjs.org/ — chỉ làm cửa sổ/runtime benchmark
+  và ghi demo cho cùng bản web. Binary tải từ GitHub electron/electron và đối chiếu
+  SHA-256 với checksums.json của package npm; không đưa binary vào Git.
+- FFmpeg qua imageio-ffmpeg0.8.1: dùng chuyển bản ghi gameplay WebM sang MP4;
+  binary/công cụ nằm ở .tools (gitignored), không phân phối trong bản game.
+- Video demo ghi renderer/gameplay thật bằng MediaRecorder. Controller tự động
+  phát input hợp lệ, được ghi rõ trên video; không mô tả như người chơi thủ công.
 
 MIT ở LICENSE chỉ cấp phép phần mã ứng dụng được thêm trong bài này;
 không chuyển quyền đối với đề lab hoặc tên/nhân vật thuộc tài liệu gốc.

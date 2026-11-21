@@ -1,7 +1,8 @@
 import {HZ,DT,ISLAND_RADIUS,distXZ,round,world,groundHeight,blocked} from './world.mjs';
 import {BUTTONS,validateInputs,validateScenario} from './validation.mjs';
 export {HZ,DT,ISLAND_RADIUS,world,groundHeight,validateInputs,validateScenario};
-const EPS=1e-8, clone=x=>structuredClone(x), byId=(a,b)=>a.id.localeCompare(b.id,'en',{numeric:true});
+const idCollator=new Intl.Collator('en',{numeric:true});
+const EPS=1e-8, clone=x=>structuredClone(x), byId=(a,b)=>idCollator.compare(a.id,b.id);
 export class Game{
   constructor(tuning,seed=1,scenario={},night=1,options={}){
     this.t=clone(tuning);this.night=night;this.world=world(night);const s=validateScenario(scenario,tuning,night);
@@ -31,10 +32,10 @@ export class Game{
   addShade(pos,id,patch={}){const sh={id:id??this.uid('S'),pos:clone(pos),state:patch.state??'wander',stateTicks:patch.state_ticks_left??0,push:[0,0],pushTicks:0,safeTicks:0,born:this.simTick-1,target_lantern_id:patch.target_lantern_id??null,drainTicks:0};if(sh.state==='recoil'){sh.push=[1,0];sh.pushTicks=sh.stateTicks;}this.shades.push(sh);return sh;}
   addDrifter(pos,id,patch={}){const d={id:id??this.uid('D'),pos:clone(pos),state:patch.state??'idle',stolen:patch.stolen??0,stateTicks:patch.state_ticks_left??(patch.state==='flee'?240:0),born:this.simTick-1,phase:this.random()*Math.PI*2};this.drifters.push(d);return d;}
   safeLanterns(){return this.lanterns.filter(l=>l.lit&&(!this.fuelRules||l.fuelUnits>=1800));}
-  safe(pos){return this.safeLanterns().some(l=>distXZ(pos,l.pos)<=6+EPS);}
+  safe(pos){return this.lanterns.some(l=>l.lit&&(!this.fuelRules||l.fuelUnits>=1800)&&distXZ(pos,l.pos)<=6+EPS);}
   moveEntity(e,dx,dz){const next=[e.pos[0]+dx,e.pos[1],e.pos[2]+dz];if(blocked(this.night,e.pos,next))return false;const h=groundHeight(this.night,next[0],next[2]),old=groundHeight(this.night,e.pos[0],e.pos[2]);if(!Number.isFinite(h)||(Number.isFinite(old)&&h>old+.4))return false;e.pos[0]=next[0];e.pos[2]=next[2];if(Number.isFinite(old))e.pos[1]+=h-old;return true;}
   advance(e,target,speed){const d=distXZ(e.pos,target);if(d<EPS)return;const a=Math.min(d,speed*DT);this.moveEntity(e,(target[0]-e.pos[0])/d*a,(target[2]-e.pos[2])/d*a);}
-  expel(sh){for(const l of this.safeLanterns()){const d=distXZ(sh.pos,l.pos);if(d<6-EPS){sh.safeTicks=Math.max(sh.safeTicks,30);const dx=d>EPS?(sh.pos[0]-l.pos[0])/d:1,dz=d>EPS?(sh.pos[2]-l.pos[2])/d:0;sh.pos[0]=l.pos[0]+6*dx;sh.pos[2]=l.pos[2]+6*dz;}}}
+  expel(sh){for(const l of this.lanterns)if(l.lit&&(!this.fuelRules||l.fuelUnits>=1800)){const d=distXZ(sh.pos,l.pos);if(d<6-EPS){sh.safeTicks=Math.max(sh.safeTicks,30);const dx=d>EPS?(sh.pos[0]-l.pos[0])/d:1,dz=d>EPS?(sh.pos[2]-l.pos[2])/d:0;sh.pos[0]=l.pos[0]+6*dx;sh.pos[2]=l.pos[2]+6*dz;}}}
   drop(amount,pos){for(let i=0;i<amount;i++){const a=this.random()*Math.PI*2,r=1.5+this.random();const p=[pos[0]+Math.cos(a)*r,pos[1],pos[2]+Math.sin(a)*r];const h=groundHeight(this.night,p[0],p[2]);if(Number.isFinite(h))p[1]=h;this.addMote(p,'dropped',480);}}
   step(patch={}){
     this.events=[];if(this.state==='won'||this.state==='lost')return this.events;
@@ -114,6 +115,7 @@ export class Game{
     this.emit('pulse',{stunned_ids:ids});
   }
   updateShades(){
+    const weak=this.fuelRules?this.lanterns.filter(l=>l.lit&&l.fuelUnits<1800):[],wanderTargets=weak.length?weak:this.lanterns.filter(l=>!l.lit);
     for(const sh of this.shades){if(sh.born>=this.simTick)continue;
       if(sh.state==='spawning'){if(sh.stateTicks>0)continue;sh.state='wander';}
       if(sh.state==='stunned'||sh.state==='recoil'){
@@ -122,13 +124,13 @@ export class Game{
       }
       const playerDistance=distXZ(sh.pos,this.player.pos);
       if(sh.state==='drain'){if(playerDistance<=6){sh.state='chase';}else{const l=this.lanterns.find(l=>l.id===sh.target_lantern_id);if(!l?.lit||l.fuelUnits>=1800||distXZ(sh.pos,l.pos)>2)sh.state='wander';else{this.expel(sh);continue;}}}
-      if(sh.state==='chase'&&playerDistance>18)sh.state='wander';
+      if(this.bench)sh.state='wander';
+      else if(sh.state==='chase'&&playerDistance>18)sh.state='wander';
       else if(sh.state==='wander'&&playerDistance<=12)sh.state='chase';
       if(sh.state==='chase')this.advance(sh,this.player.pos,this.night===3?4.5:4);
       else if(sh.state==='wander'){
-        const weak=this.fuelRules?this.lanterns.filter(l=>l.lit&&l.fuelUnits<1800):[];
-        const candidates=(weak.length?weak:this.lanterns.filter(l=>!l.lit)).sort((a,b)=>distXZ(sh.pos,a.pos)-distXZ(sh.pos,b.pos)||byId(a,b));
-        const target=candidates[0];if(target){sh.target_lantern_id=target.id;this.advance(sh,target.pos,2);if(this.fuelRules&&target.lit&&distXZ(sh.pos,target.pos)<=2+EPS){sh.state='drain';sh.drainTicks=0;}}
+        let target=null,best=Infinity;for(const candidate of wanderTargets){const d=distXZ(sh.pos,candidate.pos);if(d<best-EPS||(Math.abs(d-best)<=EPS&&target&&byId(candidate,target)<0)){best=d;target=candidate;}}
+        if(target){sh.target_lantern_id=target.id;this.advance(sh,target.pos,2);if(this.fuelRules&&target.lit&&distXZ(sh.pos,target.pos)<=2+EPS){sh.state='drain';sh.drainTicks=0;}}
       }this.expel(sh);
     }
   }

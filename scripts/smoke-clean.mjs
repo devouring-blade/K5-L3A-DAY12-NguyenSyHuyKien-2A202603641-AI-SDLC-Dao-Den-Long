@@ -20,7 +20,9 @@ try {
   assert.ok(fs.existsSync(path.join(temp, 'dist/vendor/LICENSE-three.txt')));
   const lines = fs.readFileSync(path.join(temp, 'smoke.jsonl'), 'utf8').trim().split('\n').map(JSON.parse);
   assert.equal(lines.at(-1).ticks, 60);
-  fs.writeFileSync(path.join(root, 'docs/proof/phase-1/clean-install.json'), JSON.stringify({ generated_at: new Date().toISOString(), platform: os.platform(), clean_directory: temp, passed: true, commands: records }, null, 2) + '\n');
+  const contract=JSON.parse(fs.readFileSync(path.join(root,'game.contract.json'))),phase=Number(contract.contract_version.split('.')[1])+1;
+  const proof=path.join(root,'docs/proof/phase-'+phase);fs.mkdirSync(proof,{recursive:true});
+  fs.writeFileSync(path.join(proof,'clean-install.json'), JSON.stringify({ generated_at: new Date().toISOString(), platform: os.platform(), clean_directory: temp, passed: true, commands: records }, null, 2) + '\n');
   console.log('Clean directory: offline npm ci, static build and headless smoke passed.');
 } catch (e) { console.error(e.message); process.exitCode = 1; }
 finally { fs.rmSync(temp, { recursive: true, force: true }); }
